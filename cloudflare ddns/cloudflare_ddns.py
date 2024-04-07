@@ -6,6 +6,7 @@ import logging
 import sys
 import configparser
 import argparse
+import dns.resolver
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s - %(message)s')
@@ -20,6 +21,14 @@ def get_public_IP():
     public_ip = response.json()['ip']
     logging.info(f'The public IP address for this machine is: {public_ip}.')
     return public_ip
+
+def resolve_name(domain):
+    logging.info(f'Resolving {domain}...')
+    result = dns.resolver.resolve(domain, 'A')
+
+    resolved_address = result[0].address
+    logging.info(f'Resolved {domain} to: {resolved_address}.')
+    return resolved_address
 
 def get_zone_id(domain):
     response = requests.get(f'https://api.cloudflare.com/client/v4/zones?name={domain}', headers=cloudflare_request_headers)
@@ -72,6 +81,10 @@ fullDomainName = f'{subdomain}.{fixedTopLevelDomain}'
 
 publicIP = get_public_IP()
 
+if resolve_name(fullDomainName) == publicIP:
+    logging.info(f'Currently resolved name already matches the public ip ({publicIP}), exiting...')
+    exit(0)
+    
 config = configparser.ConfigParser()
 config.read(cloudflare_token_path)
 
