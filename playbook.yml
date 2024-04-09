@@ -1,6 +1,10 @@
 ---
 - name: Install raspberry pi
+  become: true
   hosts: raspberry_pis
   tasks:
-    - name: Example from an Ansible Playbook
-      ansible.builtin.ping:
+    # Disable warning on updating latest packages, it should be safe enough for this system.
+    - name: Update all packages to their latest version # noqa: package-latest
+      ansible.builtin.apt:
+        name: "*"
+        state: latest
