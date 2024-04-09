@@ -5,7 +5,12 @@ Contains the Infrastructure as Code files which are used for provisioning my in 
 The files within this repository should be run on a computer with Ansible installed which is only supported on MacOS and Linux systems. For Windows it can be run within a WSL distro (see [this guide](https://code.visualstudio.com/docs/remote/wsl-tutorial) on how to set this up, make sure the repository is checked out on the WSL distribution itself).
 
 ### Ansible control node prerequisites
-Install Ansible ([see instructions](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)).
+1. Install Ansible ([see instructions](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)).
+2. Install Ansible Galaxy content:
+
+    ```bash
+    ansible-galaxy install -r requirements.yml
+    ```
 
 ### Environment prerequisites
 The Raspberry Pi IaC code contained within this repository provisions the Raspberry Pi itself but doesn't provision all surrounding infrastructure which is presumed to be managed by hand. The following relevant configuration is assumed:

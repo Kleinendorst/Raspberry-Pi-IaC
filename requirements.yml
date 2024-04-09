@@ -1,0 +1,6 @@
+---
+collections:
+  # from Ansible Galaxy
+  # See: https://galaxy.ansible.com/ui/repo/published/devsec/hardening/
+  - name: devsec.hardening
+    version: 9.0.1
