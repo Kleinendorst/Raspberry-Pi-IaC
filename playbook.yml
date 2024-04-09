@@ -1,0 +1,6 @@
+---
+- name: Install raspberry pi
+  hosts: raspberry_pis
+  tasks:
+    - name: Example from an Ansible Playbook
+      ansible.builtin.ping:
