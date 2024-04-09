@@ -1,12 +1,16 @@
 ---
+# Notice that "# noqa: package-latest" is included in this file. This disabled a specific check for the Ansible linter,
+# see: https://ansible.readthedocs.io/projects/lint/usage/#muting-warnings-to-avoid-false-positives.
+# For a purely reproducible build this would be a good suggestion but I'm willing to take the risk with the Pi.
 - name: Install raspberry pi
-  become: true
   hosts: raspberry_pis
   # roles:
     # These roles are disabled after they have being applied once for performance reasons, it should be safe to enable them again.
     # Notice that this role changes some settings on reruns (on the "Change various sysctl-settings" task), doesn't seem problematic though.
-    # - devsec.hardening.os_hardening
-    # - devsec.hardening.ssh_hardening
+    # - role: devsec.hardening.os_hardening
+    #   become: true
+    # - role: devsec.hardening.ssh_hardening
+    #   become: true
   vars:
     # devsec.hardening.os_hardening vars:
     os_auth_pw_max_age: 99999 # Effectively disables the setting as mentioned in the docs.
@@ -18,8 +22,63 @@
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
     ssh_client_password_login: false # Default, but duplicated here for documentation purpose.
   tasks:
-    # Disable warning on updating latest packages, it should be safe enough for this system.
     - name: Update all packages to their latest version # noqa: package-latest
+      become: true
       ansible.builtin.apt:
         name: "*"
         state: latest
+    # The ZSH installation instructions are sourced from this blog:
+    # https://harshithashok.com/tools/oh-my-zsh-with-starship/
+    - name: Install zsh # noqa: package-latest
+      become: true
+      ansible.builtin.apt:
+        pkg:
+          - git
+          - zsh
+        state: latest
+    - name: Install Oh My ZSH # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+      ansible.builtin.shell: |
+        wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+        chmod u+x install.sh
+        ./install.sh --unattended
+        rm install.sh
+      args:
+        executable: /bin/bash
+        creates: ~/.oh-my-zsh
+    - name: Install Starship # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+      become: true
+      ansible.builtin.shell: |
+        wget https://starship.rs/install.sh
+        chmod u+x install.sh
+        ./install.sh --yes
+        rm install.sh
+      args:
+        executable: /bin/bash
+        creates: /usr/local/bin/starship
+    - name: Install zsh-autosuggestions # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+      ansible.builtin.command:
+        cmd: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+        creates: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    - name: Clear "ZSH_THEME" in ~/.zshrc
+      ansible.builtin.lineinfile:
+        path: ~/.zshrc
+        regexp: '^ZSH_THEME="[^"]+"$'
+        line: ZSH_THEME=""
+    - name: Add the zsh-autosuggestions plugin in ~/.zshrc
+      ansible.builtin.lineinfile:
+        path: ~/.zshrc
+        regexp: '^plugins=\((.*)(?<!zsh-autosuggestions)\)$'
+        line: 'plugins=(\1 zsh-autosuggestions)'
+        backrefs: true
+    - name: Add Starship eval in ~/.zshrc
+      ansible.builtin.blockinfile:
+        path: ~/.zshrc
+        block: |-
+
+          # Starship
+          eval "$(starship init zsh)"
+    - name: Change the default shell of the current user
+      become: true
+      ansible.builtin.user:
+        name: "{{ ansible_facts['user_id'] }}"
+        shell: /bin/zsh
