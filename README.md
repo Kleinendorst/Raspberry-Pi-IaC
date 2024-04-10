@@ -38,3 +38,10 @@ Provision the Raspberry Pi by running:
 ```bash
 ansible-playbook -i inventory playbook.yml
 ```
+
+## Overview of installed software
+### SSH with ZSH
+It's possible to connect to the Raspberry Pi from the internal network via either its FQDN or IP address **using a public key only** setup as part of [the Raspberry Pi preperation](#raspberry-pi-preperation).
+When logged in the user will be prompted with the **zsh** configured with **[Oh My Zsh](https://ohmyz.sh)** and **[Starhip](https://starship.rs) prompts**.
+
+![zsh](./images/zsh.png)
