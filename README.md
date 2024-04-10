@@ -11,6 +11,12 @@ The files within this repository should be run on a computer with Ansible instal
     ```bash
     ansible-galaxy install -r requirements.yml
     ```
+3. Enter the vault password in the **.vault_pass** file. This is included in **.gitignore** so it shouldn't end up in the repository:
+
+    ```bash
+    # Notice the space at the beginning, this prevents the shell from saving this command in its history.
+     echo '[ -- enter vault pass here -- ]' > .vault_pass
+    ```
 
 ### Environment prerequisites
 The Raspberry Pi IaC code contained within this repository provisions the Raspberry Pi itself but doesn't provision all surrounding infrastructure which is presumed to be managed by hand. The following relevant configuration is assumed:
@@ -36,7 +42,7 @@ The Raspberry Pi should be installed and running with reachable SSH from the net
 Provision the Raspberry Pi by running:
 
 ```bash
-ansible-playbook -i inventory playbook.yml
+ansible-playbook playbook.yml
 ```
 
 ## Overview of installed software
