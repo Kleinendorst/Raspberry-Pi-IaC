@@ -1,4 +1,4 @@
-cloudflare_token.ini
-.vscode/settings.json
+cloudflare ddns/ddns_config.ini
+.vscode
 .vault_pass
 .ansible_facts.json
