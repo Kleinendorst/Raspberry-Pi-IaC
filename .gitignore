@@ -1,3 +1,4 @@
 cloudflare_token.ini
 .vscode/settings.json
 .vault_pass
+.ansible_facts.json

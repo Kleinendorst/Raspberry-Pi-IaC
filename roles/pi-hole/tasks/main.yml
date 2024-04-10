@@ -1,0 +1,9 @@
+---
+- name: Install Podman
+  become: true
+  ansible.builtin.apt:
+    name: podman
+    state: present
+# TODO: I'll have to come back to this configuration, it appears there's a problem.
+#       We're going to need to reuse web ports in order to serve multiple websites from
+#       the Raspberry Pi, this will probably necesitate installing Nginx or another reverse proxy.
