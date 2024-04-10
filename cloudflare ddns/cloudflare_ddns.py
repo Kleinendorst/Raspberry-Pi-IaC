@@ -12,16 +12,13 @@ from ip_helpers import get_public_IP, resolve_name
 logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(levelname)s - %(message)s')
 
 parser = argparse.ArgumentParser()
-parser.add_argument('subdomain')
+parser.add_argument('subdomains', nargs='+')
 parser.add_argument('-c', '--config-file', dest='config')
 
 args = parser.parse_args()
 
-subdomain = args.subdomain
-config_file_path = args.config
 
-fixedTopLevelDomain = 'kleinendorst.info'
-fullDomainName = f'{subdomain}.{fixedTopLevelDomain}'
+config_file_path = args.config
 
 config = configparser.ConfigParser()
 config.read(config_file_path)
@@ -34,17 +31,23 @@ if log_path is not None:
     log_path = config['log_changes']['log_path']
     logging.info(f'Logging DNS name changes to {log_path} on IP updates.')
 
-resolvedIP = resolve_name(fullDomainName)
 publicIP = get_public_IP()
-if resolvedIP == publicIP:
-    logging.info(f'Currently resolved name already matches the public ip ({publicIP}), exiting...')
-    exit(0)
+subdomains = args.subdomains
+fixedTopLevelDomain = 'kleinendorst.info'
 
-zoneId = cloudflare.get_zone_id(fixedTopLevelDomain)
-recordId = cloudflare.get_record_id(zoneId, fullDomainName)
-cloudflare.change_record(subdomain, zoneId, recordId, publicIP)
+for subdomain in subdomains:
+    fullDomainName = f'{subdomain}.{fixedTopLevelDomain}'
 
-with open(log_path, 'a+') as log_file:
-    msg = f'Address for FQDN {fullDomainName} altered from: {resolvedIP} - {publicIP}.'
-    logging.info(f'Writing: "{msg}" to log file at {log_path}...')
-    log_file.write(msg + '\n')
+    resolvedIP = resolve_name(fullDomainName)
+    if resolvedIP == publicIP:
+        logging.info(f'Currently resolved name already matches the public ip ({publicIP}), exiting...')
+        exit(0)
+
+    zoneId = cloudflare.get_zone_id(fixedTopLevelDomain)
+    recordId = cloudflare.get_record_id(zoneId, fullDomainName)
+    cloudflare.change_record(subdomain, zoneId, recordId, publicIP)
+
+    with open(log_path, 'a+') as log_file:
+        msg = f'Address for FQDN {fullDomainName} altered from: {resolvedIP} - {publicIP}.'
+        logging.info(f'Writing: "{msg}" to log file at {log_path}...')
+        log_file.write(msg + '\n')
