@@ -1,0 +1,56 @@
+---
+# The ZSH installation instructions are sourced from this blog:
+# https://harshithashok.com/tools/oh-my-zsh-with-starship/
+- name: Install zsh # noqa: package-latest
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - git
+      - zsh
+    state: latest
+- name: Install Oh My ZSH # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+  ansible.builtin.shell: |
+    wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+    chmod u+x install.sh
+    ./install.sh --unattended
+    rm install.sh
+  args:
+    executable: /bin/bash
+    creates: ~/.oh-my-zsh
+- name: Install Starship # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+  become: true
+  ansible.builtin.shell: |
+    wget https://starship.rs/install.sh
+    chmod u+x install.sh
+    ./install.sh --yes
+    rm install.sh
+  args:
+    executable: /bin/bash
+    creates: /usr/local/bin/starship
+- name: Install zsh-autosuggestions # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+  ansible.builtin.command:
+    cmd: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+    creates: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
+- name: Clear "ZSH_THEME" in ~/.zshrc
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    regexp: '^ZSH_THEME="[^"]+"$'
+    line: ZSH_THEME=""
+- name: Add the zsh-autosuggestions plugin in ~/.zshrc
+  ansible.builtin.lineinfile:
+    path: ~/.zshrc
+    regexp: '^plugins=\((.*)(?<!zsh-autosuggestions)\)$'
+    line: 'plugins=(\1 zsh-autosuggestions)'
+    backrefs: true
+- name: Add Starship eval in ~/.zshrc
+  ansible.builtin.blockinfile:
+    path: ~/.zshrc
+    block: |-
+
+      # Starship
+      eval "$(starship init zsh)"
+- name: Change the default shell of the current user
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_facts['user_id'] }}"
+    shell: /bin/zsh
