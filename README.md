@@ -51,3 +51,24 @@ It's possible to connect to the Raspberry Pi from the internal network via eithe
 When logged in the user will be prompted with the **zsh** configured with **[Oh My Zsh](https://ohmyz.sh)** and **[Starhip](https://starship.rs) prompts**.
 
 ![zsh](./images/zsh.png)
+
+## Other
+### Creating users with the `singleplatform-eng.users` role
+See the documentation [here](https://galaxy.ansible.com/ui/standalone/roles/singleplatform-eng/users/documentation/). The `password` setting for users states that a hash should be provided.
+This hash should be stored within an ansible vault and can be generated with the following command:
+
+```bash
+# Enter the password after which the hash will be printed
+mkpasswd -m sha512crypt
+```
+
+Logging into the new user's account can be done as follows (for testing and debugging):
+
+```bash
+# Enter both the username and password
+sudo login
+```
+
+This is verified to be working:
+
+![new users](./images/login_success.png)

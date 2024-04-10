@@ -15,6 +15,7 @@
     #   become: true
     # - role: zsh
     - role: pi-hole
+    - role: cloudflare-ddns
   vars:
     # devsec.hardening.os_hardening vars:
     os_auth_pw_max_age: 99999 # Effectively disables the setting as mentioned in the docs.
@@ -25,6 +26,8 @@
     ssh_allow_users: 'thomas'
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
     ssh_client_password_login: false # Default, but duplicated here for documentation purpose.
+    # Default for the "singleplatform-eng.users" role.
+    users_default_shell: '/usr/bin/zsh'
   tasks:
     # This task can be handy for debugging gathered facts, uncomment it if necessary:
     # - name: Store gathered facts in local file
