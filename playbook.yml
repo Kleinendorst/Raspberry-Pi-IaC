@@ -34,6 +34,15 @@
     #     content: "{{ ansible_facts }}"
     #     mode: "0600"
     # TODO: Replace this with setup that sets up unnattended updates on the machine itself.
+    - name: Configure hostname
+      become: true
+      ansible.builtin.hostname:
+        name: "{{ hostname }}"
+    - name: Add FQDN name in /etc/hosts
+      become: true
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        line: "{{ ansible_facts['default_ipv4']['address'] }} {{ hostname }}.kleinendorst.info {{ hostname }}"
     - name: Update all packages to their latest version # noqa: package-latest
       become: true
       ansible.builtin.apt:

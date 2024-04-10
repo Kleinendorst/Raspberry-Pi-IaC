@@ -1,2 +1,2 @@
 [raspberry_pis]
-192.168.50.27
+192.168.50.27 hostname=raspberry-pi-1
