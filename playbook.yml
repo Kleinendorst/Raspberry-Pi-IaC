@@ -26,8 +26,6 @@
     ssh_allow_users: 'thomas'
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
     ssh_client_password_login: false # Default, but duplicated here for documentation purpose.
-    # Default for the "singleplatform-eng.users" role.
-    users_default_shell: '/usr/bin/zsh'
   tasks:
     # This task can be handy for debugging gathered facts, uncomment it if necessary:
     # - name: Store gathered facts in local file
@@ -36,7 +34,6 @@
     #     dest: './.ansible_facts.json'
     #     content: "{{ ansible_facts }}"
     #     mode: "0600"
-    # TODO: Replace this with setup that sets up unnattended updates on the machine itself.
     - name: Configure hostname
       become: true
       ansible.builtin.hostname:
@@ -46,6 +43,7 @@
       ansible.builtin.lineinfile:
         path: /etc/hosts
         line: "{{ ansible_facts['default_ipv4']['address'] }} {{ hostname }}.kleinendorst.info {{ hostname }}"
+    # TODO: Replace this with setup that sets up unnattended updates on the machine itself.
     - name: Update all packages to their latest version # noqa: package-latest
       become: true
       ansible.builtin.apt:
