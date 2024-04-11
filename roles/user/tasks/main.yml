@@ -1,14 +1,29 @@
 ---
 # The ZSH installation instructions are sourced from this blog:
 # https://harshithashok.com/tools/oh-my-zsh-with-starship/
-- name: Install zsh # noqa: package-latest
+- name: Create a new user
+  become: true
+  ansible.builtin.user:
+    append: true
+    groups:
+      - users
+    name: "{{ username }}"
+    # Salt is necessary, see: https://stackoverflow.com/questions/56869949/ansible-user-module-always-shows-changed
+    password: "{{ password | password_hash('sha512', password_salt) }}"
+  when: username is not undefined # Skip when no user is provided, we'll asume we're targetting the Ansible user.
+- name: Set fact for defining the user which should run the next modules
+  ansible.builtin.set_fact:
+    target_user: "{{ ansible_facts['user_id'] if username is undefined else username }}"
+- name: Ensuring ZSH is installed # noqa: package-latest
   become: true
   ansible.builtin.apt:
     pkg:
-      - git
+      - acl # Needed to prevent this error: https://stackoverflow.com/questions/46352173/ansible-failed-to-set-permissions-on-the-temporary
       - zsh
     state: latest
 - name: Install Oh My ZSH # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+  become: true
+  become_user: "{{ target_user }}"
   ansible.builtin.shell: |
     wget https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
     chmod u+x install.sh
@@ -28,21 +43,29 @@
     executable: /bin/bash
     creates: /usr/local/bin/starship
 - name: Install zsh-autosuggestions # noqa: command-instead-of-module   ignore error since we're removing the script after install.
+  become: true
+  become_user: "{{ target_user }}"
   ansible.builtin.command:
     cmd: git clone https://github.com/zsh-users/zsh-autosuggestions ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
     creates: ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions
 - name: Clear "ZSH_THEME" in ~/.zshrc
+  become: true
+  become_user: "{{ target_user }}"
   ansible.builtin.lineinfile:
     path: ~/.zshrc
     regexp: '^ZSH_THEME="[^"]+"$'
     line: ZSH_THEME=""
 - name: Add the zsh-autosuggestions plugin in ~/.zshrc
+  become: true
+  become_user: "{{ target_user }}"
   ansible.builtin.lineinfile:
     path: ~/.zshrc
     regexp: '^plugins=\((.*)(?<!zsh-autosuggestions)\)$'
     line: 'plugins=(\1 zsh-autosuggestions)'
     backrefs: true
 - name: Add Starship eval in ~/.zshrc
+  become: true
+  become_user: "{{ target_user }}"
   ansible.builtin.blockinfile:
     path: ~/.zshrc
     block: |-
@@ -52,5 +75,5 @@
 - name: Change the default shell of the current user
   become: true
   ansible.builtin.user:
-    name: "{{ ansible_facts['user_id'] }}"
-    shell: /bin/zsh
+    name: "{{ target_user }}"
+    shell: /usr/bin/zsh

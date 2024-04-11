@@ -53,15 +53,9 @@ When logged in the user will be prompted with the **zsh** configured with **[Oh 
 ![zsh](./images/zsh.png)
 
 ## Other
-### Creating users with the `singleplatform-eng.users` role
-See the documentation [here](https://galaxy.ansible.com/ui/standalone/roles/singleplatform-eng/users/documentation/). The `password` setting for users states that a hash should be provided.
-This hash should be stored within an ansible vault and can be generated with the following command:
-
-```bash
-# Enter the password after which the hash will be printed
-mkpasswd -m sha512crypt
-```
-
+### Debugging users other than the main user
+The **user** role included in this repository makes it possible to create new users which will also have a fully configured
+ZSH environment. They can't be accessed via SSH because no SSH keys are added for them and password logins are disabled.
 Logging into the new user's account can be done as follows (for testing and debugging):
 
 ```bash

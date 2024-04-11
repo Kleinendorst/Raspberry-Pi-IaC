@@ -1,14 +1,10 @@
 ---
-- include_vars: defaults.yml
+- include_vars: vault.yml
 # TODO: Configure ZSH correctly by reasusing the zsh role by running the commands as the new user.
 #       see: https://serverfault.com/questions/662443/running-ansible-task-as-a-specific-user
 - name: Create a new user
   ansible.builtin.include_role:
-    name: singleplatform-eng.users
-    apply:
-      become: true
+    name: user
   vars:
-    users:
-      - username: cloudflare_ddns
-        name: '-'
-        password: "{{ cloudflare_ddns_user_password_hash }}"
+    username: cloudflare_ddns
+    password: "{{ cloudflare_ddns_user_password }}"
