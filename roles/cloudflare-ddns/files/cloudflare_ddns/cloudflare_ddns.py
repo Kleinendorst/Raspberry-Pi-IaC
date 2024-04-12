@@ -5,6 +5,7 @@ import logging
 import sys
 import configparser
 import argparse
+from datetime import datetime
 from cloudflare_api import CloudFlare
 from ip_helpers import get_public_IP, resolve_name
 
@@ -48,6 +49,7 @@ for subdomain in subdomains:
     cloudflare.change_record(subdomain, zoneId, recordId, publicIP)
 
     with open(log_path, 'a+') as log_file:
-        msg = f'Address for FQDN {fullDomainName} altered from: {resolvedIP} - {publicIP}.'
+        date_str = datetime.isoformat(datetime.now())
+        msg = f'{date_str}\t\tAddress for FQDN {fullDomainName} altered from: {resolvedIP} - {publicIP}.'
         logging.info(f'Writing: "{msg}" to log file at {log_path}...')
         log_file.write(msg + '\n')
