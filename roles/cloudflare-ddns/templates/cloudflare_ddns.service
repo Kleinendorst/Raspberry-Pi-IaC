@@ -1,0 +1,13 @@
+[Unit]
+Description=Cloudflare DDNS service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=cloudflare_ddns
+Group=cloudflare_ddns
+ExecStart=/home/cloudflare_ddns/bin/cloudflare_ddns/cloudflare_ddns.sh {{ wireguard_address }}
+
+[Install]
+WantedBy=default.target

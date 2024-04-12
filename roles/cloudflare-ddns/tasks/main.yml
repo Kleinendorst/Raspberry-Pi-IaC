@@ -7,3 +7,60 @@
   vars:
     username: cloudflare_ddns
     password: "{{ cloudflare_ddns_user_password }}"
+- name: Install Python dependencies # noqa: package-latest
+  become: true
+  ansible.builtin.apt:
+    pkg: python3-pip
+    state: latest
+- name: Copy over DDNS scripting
+  become: true
+  become_user: cloudflare_ddns
+  ansible.builtin.copy:
+    src: cloudflare_ddns
+    dest: ~/bin/
+    mode: '0700'
+- name: Configure Python venv
+  become: true
+  become_user: cloudflare_ddns
+  ansible.builtin.shell: |
+    cd ~/bin/cloudflare_ddns
+    python3 -m venv ./venv
+    chmod u+x ./venv/bin/activate
+    source ./venv/bin/activate
+    pip3 install -r ./requirements.txt
+  args:
+    executable: /bin/bash
+    creates: ~/bin/cloudflare_ddns/venv
+- name: Create directory for storing public IP change logs and config
+  become: true
+  become_user: cloudflare_ddns
+  ansible.builtin.file:
+    path: ~/cloudflare_ddns
+    state: directory
+    mode: '0700'
+- name: Fill config file and store it in folder
+  become: true
+  become_user: cloudflare_ddns
+  ansible.builtin.template:
+    src: ddns_config.ini.j2
+    dest: ~/cloudflare_ddns/ddns_config.ini
+    mode: '0600'
+- name: Install Cloudflare DDNS service file
+  become: true
+  ansible.builtin.template:
+    src: cloudflare_ddns.service
+    dest: /lib/systemd/system/
+    mode: '0644'
+- name: Install Cloudflare DDNS timer file
+  become: true
+  ansible.builtin.copy:
+    src: cloudflare_ddns.timer
+    dest: /lib/systemd/system/
+    mode: '0644'
+- name: Enable the newly added systemd timer
+  become: true
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: cloudflare_ddns.timer
+    state: started
+    enabled: true

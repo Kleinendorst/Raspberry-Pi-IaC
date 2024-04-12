@@ -40,8 +40,8 @@ for subdomain in subdomains:
 
     resolvedIP = resolve_name(fullDomainName)
     if resolvedIP == publicIP:
-        logging.info(f'Currently resolved name already matches the public ip ({publicIP}), exiting...')
-        exit(0)
+        logging.info(f'Currently resolved name already matches the public ip ({publicIP}), skipping this name...')
+        continue
 
     zoneId = cloudflare.get_zone_id(fixedTopLevelDomain)
     recordId = cloudflare.get_record_id(zoneId, fullDomainName)

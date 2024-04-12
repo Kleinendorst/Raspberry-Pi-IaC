@@ -1,0 +1,10 @@
+[Unit]
+Description=Cloudflare DDNS timer
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=900
+Persistent=true
+
+[Install]
+WantedBy=timers.target
