@@ -20,6 +20,8 @@
     # devsec.hardening.os_hardening vars:
     os_auth_pw_max_age: 99999 # Effectively disables the setting as mentioned in the docs.
     os_cron_enabled: false # Cron isn't needed for the installation.
+    os_filesystem_whitelist:
+      - squashfs # Used by Snapcraft which is installed on the Raspberry Pi at some moment
     sysctl_overwrite:
       vm.mmap_rnd_bits: 16 # See the "sysctl - vm.mmap_rnd_bits" section of the docs.
     # devsec.hardening.ssh_hardening vars:
