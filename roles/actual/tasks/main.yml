@@ -1,0 +1,47 @@
+---
+- name: Install Podman
+  become: true
+  ansible.builtin.apt:
+    name: podman
+    state: present
+- name: Create a new user
+  ansible.builtin.include_role:
+    name: user
+  vars:
+    username: "{{ actual_user }}"
+    password: "{{ actual_password }}"
+- name: Create a directory for holding actual's (volume) data
+  become: true
+  become_user: "{{ actual_user }}"
+  ansible.builtin.file:
+    path: "/home/{{ actual_user }}/actual_data"
+    state: directory
+    mode: '0700'
+# Unfortunatelly I can't set the web password in the container, a user has to manually do this on startup.
+- name: Start the Actual container
+  become: true
+  become_user: "{{ actual_user }}"
+  containers.podman.podman_container:
+    name: actual-server
+    image: docker.io/actualbudget/actual-server:24.4.0
+    restart_policy: on-failure
+    publish:
+      - 127.0.0.1:5006:5006
+    volumes:
+      - "/home/{{ actual_user }}/actual_data:/data"
+    state: started
+- name: Install certificate for actual.kleinendorst.info
+  become: true
+  ansible.builtin.command:
+    cmd: register_certbot_domain.sh actual.kleinendorst.info
+    creates: /etc/letsencrypt/live/actual.kleinendorst.info # The certificate directory
+- name: Set Nginx configuration
+  become: true
+  ansible.builtin.template:
+    src: actual.conf.j2
+    dest: /etc/nginx/conf.d/actual.conf
+    mode: '0644'
+  notify: Restart Nginx
+- name: Debug
+  ansible.builtin.debug:
+    msg: "Don't forget to manually add a DNS record for actual.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."

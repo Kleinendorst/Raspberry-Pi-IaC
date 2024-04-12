@@ -19,8 +19,12 @@
   ansible.builtin.apt:
     name: nginx # Creates the "nginx" user as well
     state: present
-# TODO: Remove the default configuration here, we'll keep it for now as an example...
-# TODO: Setup Certbot as it's part of the installation...
+- name: Remove default configuration
+  become: true
+  ansible.builtin.file:
+    path: /etc/nginx/conf.d/default.conf
+    state: absent
+  notify: Restart Nginx
 # ---------- CERTBOT INSTALLATION ---------- #
 # See the installation instructions here: https://certbot.eff.org/instructions?ws=nginx&os=debianbuster&tab=wildcard
 - name: Install Certbot

@@ -3,3 +3,8 @@
   become: true
   ansible.builtin.command:
     cmd: snap set certbot trust-plugin-with-root=ok
+- name: Restart Nginx
+  become: true
+  ansible.builtin.systemd:
+    name: nginx.service
+    state: restarted
