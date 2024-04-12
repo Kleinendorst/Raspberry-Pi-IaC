@@ -1,0 +1,26 @@
+---
+- name: Add an apt key by id from a keyserver
+  become: true
+  ansible.builtin.apt_key:
+    url: https://nginx.org/packages/keys/nginx_signing.key
+    state: present
+- name: Add Nginx repository into sources list
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb https://nginx.org/packages/debian/ {{ ansible_facts['lsb']['codename'] }} nginx
+    state: present
+- name: Add Nginx source repository into sources list
+  become: true
+  ansible.builtin.apt_repository:
+    repo: deb-src https://nginx.org/packages/debian/ {{ ansible_facts['lsb']['codename'] }} nginx
+    state: present
+- name: Install Nginx
+  become: true
+  ansible.builtin.apt:
+    name: nginx # Creates the "nginx" user as well
+    state: present
+- name: Start Nginx
+  become: true
+  ansible.builtin.systemd:
+    name: nginx.service
+    state: started
