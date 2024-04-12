@@ -63,12 +63,16 @@
     regexp: '^plugins=\((.*)(?<!zsh-autosuggestions)\)$'
     line: 'plugins=(\1 zsh-autosuggestions)'
     backrefs: true
-- name: Add Starship eval in ~/.zshrc
+# For some reason snap isn't properly configured and its bin directory isn't added to the $PATH variable.
+# This probably has something to do with the hardening rules, instead we'll fix it here.
+- name: Add Starship config and Snapcraft to ~/.zshrc
   become: true
   become_user: "{{ target_user }}"
   ansible.builtin.blockinfile:
     path: ~/.zshrc
     block: |-
+      # Add Snapcraft to $PATH
+      export PATH=$PATH:/snap/bin
 
       # Starship
       eval "$(starship init zsh)"

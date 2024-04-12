@@ -1,2 +1,3 @@
 ---
 nginx_user: nginx # Created automatically by the apt installation
+certbot_user: certbot

@@ -1,0 +1,6 @@
+#!/bin/bash
+/snap/bin/certbot certonly \
+        --dns-cloudflare \
+        --dns-cloudflare-credentials '{{ cloudflare_credential_dir_path }}/{{ cloudflare_credential_filename }}' \
+        --agree-tos --test-cert -m {{ administration_email }} \
+        -d $1

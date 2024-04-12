@@ -19,6 +19,53 @@
   ansible.builtin.apt:
     name: nginx # Creates the "nginx" user as well
     state: present
+# TODO: Remove the default configuration here, we'll keep it for now as an example...
+# TODO: Setup Certbot as it's part of the installation...
+# ---------- CERTBOT INSTALLATION ---------- #
+# See the installation instructions here: https://certbot.eff.org/instructions?ws=nginx&os=debianbuster&tab=wildcard
+- name: Install Certbot
+  become: true
+  community.general.snap:
+    name: certbot
+    classic: true
+    state: present
+  notify: Confirm Certbot plugin containment level
+- name: Flush handlers # Makes sure that the handler runs
+  ansible.builtin.meta: flush_handlers
+- name: Install Certbot DNS Cloudflare plugin
+  become: true
+  community.general.snap:
+    name: certbot-dns-cloudflare
+    classic: true
+    state: present
+- name: Set cloudflare variable
+  ansible.builtin.set_fact:
+    cloudflare_credential_dir_path: "/root/.secrets/certbot"
+    cloudflare_credential_filename: cloudflare.ini
+- name: Create Certbot credential directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ cloudflare_credential_dir_path }}"
+    state: directory
+    mode: '0700'
+- name: Place cloudflare credential in certbot user's file
+  become: true
+  ansible.builtin.template:
+    src: cloudflare.ini.j2
+    dest: "{{ cloudflare_credential_dir_path }}/{{ cloudflare_credential_filename }}"
+    mode: '0400'
+- name: Install the certificate script
+  become: true
+  ansible.builtin.template:
+    src: register_certbot_domain.sh.j2
+    dest: /usr/local/bin/register_certbot_domain.sh
+    mode: '0500'
+- name: Create the root certificate for my domain
+  become: true
+  ansible.builtin.command:
+    cmd: register_certbot_domain.sh kleinendorst.info
+    creates: /etc/letsencrypt/live/kleinendorst.info # The certificate directory
+# END ------ CERTBOT INSTALLATION ------ END #
 - name: Start Nginx
   become: true
   ansible.builtin.systemd:
