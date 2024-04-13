@@ -19,6 +19,7 @@
   ansible.builtin.apt:
     pkg:
       - acl # Needed to prevent this error: https://stackoverflow.com/questions/46352173/ansible-failed-to-set-permissions-on-the-temporary
+      - git
       - zsh
     state: latest
 - name: Install Oh My ZSH # noqa: command-instead-of-module   ignore error since we're removing the script after install.
