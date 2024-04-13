@@ -8,8 +8,8 @@
   ansible.builtin.include_role:
     name: user
   vars:
-    username: "{{ actual_user }}"
-    password: "{{ actual_password }}"
+    user_username: "{{ actual_user }}"
+    user_password: "{{ actual_password }}"
 - name: Create a directory for holding actual's (volume) data
   become: true
   become_user: "{{ actual_user }}"

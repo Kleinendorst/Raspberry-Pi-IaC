@@ -7,13 +7,13 @@
     append: true
     groups:
       - users
-    name: "{{ username }}"
+    name: "{{ user_username }}"
     # Salt is necessary, see: https://stackoverflow.com/questions/56869949/ansible-user-module-always-shows-changed
-    password: "{{ password | password_hash('sha512', password_salt) }}"
-  when: username is not undefined # Skip when no user is provided, we'll asume we're targetting the Ansible user.
+    password: "{{ user_password | password_hash('sha512', password_salt) }}"
+  when: user_username is not undefined # Skip when no user is provided, we'll asume we're targetting the Ansible user.
 - name: Set fact for defining the user which should run the next modules
   ansible.builtin.set_fact:
-    target_user: "{{ ansible_facts['user_id'] if username is undefined else username }}"
+    target_user: "{{ ansible_facts['user_id'] if user_username is undefined else user_username }}"
 - name: Ensuring ZSH is installed # noqa: package-latest
   become: true
   ansible.builtin.apt:

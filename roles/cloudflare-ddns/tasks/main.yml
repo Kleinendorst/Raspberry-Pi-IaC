@@ -3,8 +3,8 @@
   ansible.builtin.include_role:
     name: user
   vars:
-    username: "{{ cloudflare_ddns_user }}"
-    password: "{{ cloudflare_ddns_user_password }}"
+    user_username: "{{ cloudflare_ddns_user }}"
+    user_password: "{{ cloudflare_ddns_user_password }}"
 - name: Install Python dependencies # noqa: package-latest
   become: true
   ansible.builtin.apt:
