@@ -1,0 +1,11 @@
+---
+- name: Configure hostname
+  become: true
+  ansible.builtin.hostname:
+    name: "{{ hostname }}"
+- name: Remove existing /etc/hosts entry for hostname and add FQDN name
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: "^127.0.1.1.*$"
+    line: "{{ ansible_facts['default_ipv4']['address'] }} {{ hostname }}.kleinendorst.info {{ hostname }}"

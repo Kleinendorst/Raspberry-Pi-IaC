@@ -1,9 +1,4 @@
 ---
-- name: Install Podman
-  become: true
-  ansible.builtin.apt:
-    name: podman
-    state: present
 - name: Create a user for running the pi-hole podman container
   ansible.builtin.include_role:
     name: user
@@ -79,34 +74,6 @@
 - name: Debug
   ansible.builtin.debug:
     msg: "Don't forget to manually add a DNS record for pi-hole.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
-- name: Install ufw
-  become: true
-  ansible.builtin.apt:
-    name: ufw
-    state: present
-- name: Set default policy (incoming)
-  become: true
-  community.general.ufw:
-    direction: incoming
-    policy: deny
-- name: Set default policy (outgoing)
-  become: true
-  community.general.ufw:
-    direction: outgoing
-    policy: allow
-- name: Allow forwarding in ufw
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/ufw/sysctl.conf
-    regexp: '^#net/ipv4/ip_forward=1$'
-    line: 'net/ipv4/ip_forward=1'
-- name: Configure firewall to allow forward requests
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/default/ufw
-    regexp: '^DEFAULT_FORWARD_POLICY="DROP"$'
-    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
-  notify: Restart ufw
 - name: Add forwarding rules for ufw
   become: true
   ansible.builtin.blockinfile:
@@ -118,13 +85,6 @@
       -A PREROUTING -p tcp --dport 53 -j REDIRECT --to-port 5053
       -A PREROUTING -p udp --dport 53 -j REDIRECT --to-port 5053
       COMMIT
-  notify: Restart ufw
-- name: Allow all access to ssh
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: ssh
-    proto: tcp
   notify: Restart ufw
 - name: Allow all access to https
   become: true
@@ -147,7 +107,3 @@
     port: '53'
     proto: tcp
   notify: Restart ufw
-- name: Enable ufw
-  become: true
-  community.general.ufw:
-    state: enabled

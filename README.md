@@ -53,6 +53,10 @@ When logged in the user will be prompted with the **zsh** configured with **[Oh 
 ![zsh](./images/zsh.png)
 
 ## Other
+### Reinstalling the Pi
+It can be handy to reinstall the Pi. First shutdown the pi by running `sudo shutdown` from SSH. Next take out the memory card and follow all steps in [Raspberry Pi preperation](#raspberry-pi-preperation).
+For the next step remove the current *known_hosts* entry with: `ssh-keygen -R '192.168.50.27'` for all PCs that had SSH access to the Pi.
+
 ### Debugging users other than the main user
 The **user** role included in this repository makes it possible to create new users which will also have a fully configured
 ZSH environment. They can't be accessed via SSH because no SSH keys are added for them and password logins are disabled.

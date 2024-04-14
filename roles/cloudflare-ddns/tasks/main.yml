@@ -5,11 +5,11 @@
   vars:
     user_username: "{{ cloudflare_ddns_user }}"
     user_password: "{{ cloudflare_ddns_user_password }}"
-- name: Install Python dependencies # noqa: package-latest
+- name: Install Python dependencies
   become: true
   ansible.builtin.apt:
     pkg: python3-pip
-    state: latest
+    state: present
 - name: Copy over DDNS scripting
   become: true
   become_user: "{{ cloudflare_ddns_user }}"
@@ -27,7 +27,7 @@
     source ./venv/bin/activate
     pip3 install -r ./requirements.txt
   args:
-    executable: /bin/bash
+    executable: /usr/bin/zsh
     creates: ~/bin/cloudflare_ddns/venv
 - name: Create directory for storing public IP change logs and config
   become: true

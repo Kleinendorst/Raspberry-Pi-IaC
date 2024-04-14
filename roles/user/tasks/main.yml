@@ -14,14 +14,13 @@
 - name: Set fact for defining the user which should run the next modules
   ansible.builtin.set_fact:
     target_user: "{{ ansible_facts['user_id'] if user_username is undefined else user_username }}"
-- name: Ensuring ZSH is installed # noqa: package-latest
+- name: Ensuring ZSH is installed
   become: true
   ansible.builtin.apt:
     pkg:
       - acl # Needed to prevent this error: https://stackoverflow.com/questions/46352173/ansible-failed-to-set-permissions-on-the-temporary
-      - git
       - zsh
-    state: latest
+    state: present
 - name: Install Oh My ZSH # noqa: command-instead-of-module   ignore error since we're removing the script after install.
   become: true
   become_user: "{{ target_user }}"

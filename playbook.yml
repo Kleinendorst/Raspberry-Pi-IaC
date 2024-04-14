@@ -9,25 +9,16 @@
   roles:
     # These roles are disabled after they have being applied once for performance reasons, it should be safe to enable them again.
     # Notice that this role changes some settings on reruns (on the "Change various sysctl-settings" task), doesn't seem problematic though.
-    # - role: devsec.hardening.os_hardening
-    #   become: true
-    # - role: devsec.hardening.ssh_hardening
-    #   become: true
-    # - role: snapcraft
-    # - role: user
-    # - role: cloudflare-ddns
-    # - role: reverse-proxy
-    # - role: actual
-    - role: pi-hole
+    - role: devsec.hardening.ssh_hardening
+      become: true
+    - role: hostname
+    - role: basic-intalls
+    - role: user
+    - role: cloudflare-ddns
+    - role: reverse-proxy
+    - role: actual
+    # - role: pi-hole
   vars:
-    # devsec.hardening.os_hardening vars:
-    os_auth_pw_max_age: 99999 # Effectively disables the setting as mentioned in the docs.
-    os_cron_enabled: false # Cron isn't needed for the installation.
-    os_filesystem_whitelist:
-      - squashfs # Used by Snapcraft which is installed on the Raspberry Pi at some moment
-    sysctl_overwrite:
-      vm.mmap_rnd_bits: 16 # See the "sysctl - vm.mmap_rnd_bits" section of the docs.
-      net.ipv4.ip_forward: 1 # We're specifically going to allow ufw forwarding in the playbook.
     # devsec.hardening.ssh_hardening vars:
     ssh_allow_users: 'thomas'
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
@@ -40,23 +31,3 @@
     #     dest: './.ansible_facts.json'
     #     content: "{{ ansible_facts }}"
     #     mode: "0600"
-    - name: Add FQDN name in /etc/hosts
-      become: true
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        line: "{{ ansible_facts['default_ipv4']['address'] }} {{ hostname }}.kleinendorst.info {{ hostname }}"
-    # For some reason sudo becomes very slow when this isn't correctly configured. Fixing the configuration as suggested
-    # here: https://www.linuxquestions.org/questions/linux-newbie-8/fedora-11-sudo-has-a-20-second-start-delay-732291/#post3575840
-    # fixed the problem for me. We could try to remove the default hostname variable which was added by using the "ansible_facts['hostname']"
-    # variable which is fetched in the special "Gathering facts" step.
-    - name: Configure hostname
-      become: true
-      ansible.builtin.hostname:
-        name: "{{ hostname }}"
-    # TODO: Replace this with setup that sets up unnattended updates on the machine itself.
-    - name: Update all packages to their latest version # noqa: package-latest
-      become: true
-      ansible.builtin.apt:
-        name: "*"
-        state: latest
-# TODO: install vim on the system
