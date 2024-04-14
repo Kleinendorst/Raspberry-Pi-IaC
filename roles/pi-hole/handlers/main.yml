@@ -4,3 +4,8 @@
   ansible.builtin.systemd:
     name: nginx.service
     state: restarted
+- name: Restart ufw
+  become: true
+  ansible.builtin.systemd:
+    name: ufw.service
+    state: restarted

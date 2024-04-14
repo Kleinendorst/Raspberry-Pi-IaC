@@ -24,7 +24,7 @@
   containers.podman.podman_container:
     name: actual-server
     image: docker.io/actualbudget/actual-server:24.4.0
-    restart_policy: on-failure
+    restart_policy: on-failure # TODO: Doesn't restart containers on reboot for some reason...
     publish:
       - 127.0.0.1:5006:5006
     volumes:

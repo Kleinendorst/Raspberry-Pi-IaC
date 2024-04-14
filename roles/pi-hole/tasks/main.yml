@@ -19,6 +19,7 @@
     mode: '0700'
   register: command_result
   failed_when:
+    - command_result.changed == false
     - command_result.rc != 0
     # This is quite an interesting problem. The command fails because, after initial creation, the pod using the volume
     # changes the user of the folder to a UID only known within the container. This command basically doesn't need to
@@ -32,6 +33,7 @@
     state: directory
     mode: '0700'
   failed_when:
+    - command_result.changed == false
     - command_result.rc != 0
     # This is quite an interesting problem. The command fails because, after initial creation, the pod using the volume
     # changes the user of the folder to a UID only known within the container. This command basically doesn't need to
@@ -43,7 +45,7 @@
   containers.podman.podman_container:
     name: pi-hole
     image: docker.io/pihole/pihole:2024.03.2
-    restart_policy: on-failure
+    restart_policy: on-failure # TODO: Doesn't restart containers on reboot for some reason...
     publish:
     # It seems we can't use authbind in combination with Podman, see: https://github.com/containers/podman/issues/13426.
     # Instead we'll map to a higher port number and install and use the ufw firewall to forward packets to the local port.
@@ -53,9 +55,11 @@
     env:
       TZ: 'Europe/Amsterdam'
       WEBPASSWORD: "{{ pi_hole_web_password }}"
-      FTLCONF_LOCAL_IPV4: "{{ ansible_facts['default_ipv4']['address'] }}"
+      # VIRTUAL_HOST: 'pi-hole.kleinendorst.info'
+      # FTLCONF_LOCAL_IPV4: "{{ ansible_facts['default_ipv4']['address'] }}"
       PIHOLE_DNS_: 1.1.1.1;1.0.0.1
-      DNSMASQ_USER: "{{ pi_hole_username }}"
+      DNSMASQ_USER: root
+      INTERFACE: tap0
     volumes:
       - "/home/{{ pi_hole_username }}/etc-pihole:/etc/pihole"
       - "/home/{{ pi_hole_username }}/etc-dnsmasq.d:/etc/dnsmasq.d"
@@ -75,4 +79,75 @@
 - name: Debug
   ansible.builtin.debug:
     msg: "Don't forget to manually add a DNS record for pi-hole.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
-# TODO: Install and configure ufw to forward the DNS port (53) to the 5053 podman container port.
+- name: Install ufw
+  become: true
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+- name: Set default policy (incoming)
+  become: true
+  community.general.ufw:
+    direction: incoming
+    policy: deny
+- name: Set default policy (outgoing)
+  become: true
+  community.general.ufw:
+    direction: outgoing
+    policy: allow
+- name: Allow forwarding in ufw
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/ufw/sysctl.conf
+    regexp: '^#net/ipv4/ip_forward=1$'
+    line: 'net/ipv4/ip_forward=1'
+- name: Configure firewall to allow forward requests
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/default/ufw
+    regexp: '^DEFAULT_FORWARD_POLICY="DROP"$'
+    line: 'DEFAULT_FORWARD_POLICY="ACCEPT"'
+  notify: Restart ufw
+- name: Add forwarding rules for ufw
+  become: true
+  ansible.builtin.blockinfile:
+    path: /etc/ufw/before.rules
+    insertafter: "^COMMIT$"
+    block: |-
+      *nat
+      :PREROUTING ACCEPT [0:0]
+      -A PREROUTING -p tcp --dport 53 -j REDIRECT --to-port 5053
+      -A PREROUTING -p udp --dport 53 -j REDIRECT --to-port 5053
+      COMMIT
+  notify: Restart ufw
+- name: Allow all access to ssh
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: ssh
+    proto: tcp
+  notify: Restart ufw
+- name: Allow all access to https
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: https
+    proto: tcp
+  notify: Restart ufw
+- name: Allow all access to port 53 (udp)
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: '53'
+    proto: udp
+  notify: Restart ufw
+- name: Allow all access to port 53 (tcp)
+  become: true
+  community.general.ufw:
+    rule: allow
+    port: '53'
+    proto: tcp
+  notify: Restart ufw
+- name: Enable ufw
+  become: true
+  community.general.ufw:
+    state: enabled
