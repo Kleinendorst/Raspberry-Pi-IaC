@@ -74,6 +74,24 @@
 - name: Debug
   ansible.builtin.debug:
     msg: "Don't forget to manually add a DNS record for pi-hole.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
+- name: Setup udp port forwarding (53 > 5053) in nginx
+  become: true
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    insertbefore: '^http \{$'
+    block: |
+      stream {
+        server {
+          listen 53;
+          proxy_pass 127.0.0.1:5053;
+        }
+
+        server {
+            listen 53 udp;
+            proxy_pass 127.0.0.1:5053;
+        }
+      }
+  notify: Restart Nginx
 # - name: Add forwarding rules for ufw
 #   become: true
 #   ansible.builtin.blockinfile:
