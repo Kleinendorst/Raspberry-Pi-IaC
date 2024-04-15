@@ -40,6 +40,10 @@
   containers.podman.podman_container:
     name: pi-hole
     image: docker.io/pihole/pihole:2024.03.2
+    # TODO: Enable containers on boot
+    # I expected podman containers to restart on boot with this policy but apparently the documentation specifically
+    # states that they won't do this. There seems to be an involved workaround to get this to work whilst keeping the
+    # containers "rootless". See this guide: https://linuxhandbook.com/autostart-podman-containers/
     restart_policy: on-failure
     publish:
     # It seems we can't use authbind in combination with Podman, see: https://github.com/containers/podman/issues/13426.

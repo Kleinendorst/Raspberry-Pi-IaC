@@ -19,7 +19,11 @@
   containers.podman.podman_container:
     name: actual-server
     image: docker.io/actualbudget/actual-server:24.4.0
-    restart_policy: on-failure # TODO: Doesn't restart containers on reboot for some reason...
+    # TODO: Enable containers on boot
+    # I expected podman containers to restart on boot with this policy but apparently the documentation specifically
+    # states that they won't do this. There seems to be an involved workaround to get this to work whilst keeping the
+    # containers "rootless". See this guide: https://linuxhandbook.com/autostart-podman-containers/
+    restart_policy: on-failure
     publish:
       - 127.0.0.1:5006:5006
     volumes:
