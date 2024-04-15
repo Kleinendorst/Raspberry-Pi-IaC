@@ -14,6 +14,20 @@
 - name: Set fact for defining the user which should run the next modules
   ansible.builtin.set_fact:
     target_user: "{{ ansible_facts['user_id'] if user_username is undefined else user_username }}"
+# The "lingering" property seems to be important to Podman, otherwise errors are thrown as mentioned here:
+# https://superuser.com/questions/1788594/podman-the-cgroupv2-manager-is-set-to-systemd-but-there-is-no-systemd-user-sess
+- name: "Check if lingering is enabled (user: {{ target_user }})"
+  ansible.builtin.command:
+    cmd: "loginctl show-user {{ target_user }} --property=Linger"
+  register: linger_check
+  changed_when: false
+  failed_when: false
+- name: "Enable systemd \"lingering\"  (user: {{ target_user }})"
+  become: true
+  ansible.builtin.command:
+    cmd: "loginctl enable-linger {{ target_user }}"
+  when: linger_check.rc != 0
+  changed_when: true
 - name: Ensuring ZSH is installed
   become: true
   ansible.builtin.apt:
