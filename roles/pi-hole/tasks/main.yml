@@ -74,29 +74,29 @@
 - name: Debug
   ansible.builtin.debug:
     msg: "Don't forget to manually add a DNS record for pi-hole.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
-- name: Add forwarding rules for ufw
-  become: true
-  ansible.builtin.blockinfile:
-    path: /etc/ufw/before.rules
-    insertbefore: "^\\*filter$"
-    block: |
-      *nat
-      :PREROUTING ACCEPT [0:0]
-      -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT \ --to-destination 127.0.0.1:5053
-      -A PREROUTING -p udp -i eth0 --dport 53 -j DNAT \ --to-destination 127.0.0.1:5053
-      COMMIT
-  notify: Restart ufw
-- name: Allow all access to port 53 (udp)
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: '53'
-    proto: udp
-  notify: Restart ufw
-- name: Allow all access to port 53 (tcp)
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: '53'
-    proto: tcp
-  notify: Restart ufw
+# - name: Add forwarding rules for ufw
+#   become: true
+#   ansible.builtin.blockinfile:
+#     path: /etc/ufw/before.rules
+#     insertbefore: "^\\*filter$"
+#     block: |
+#       *nat
+#       :PREROUTING ACCEPT [0:0]
+#       -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT \ --to-destination 127.0.0.1:5053
+#       -A PREROUTING -p udp -i eth0 --dport 53 -j DNAT \ --to-destination 127.0.0.1:5053
+#       COMMIT
+#   notify: Restart ufw
+# - name: Allow all access to port 53 (udp)
+#   become: true
+#   community.general.ufw:
+#     rule: allow
+#     port: '53'
+#     proto: udp
+#   notify: Restart ufw
+# - name: Allow all access to port 53 (tcp)
+#   become: true
+#   community.general.ufw:
+#     rule: allow
+#     port: '53'
+#     proto: tcp
+#   notify: Restart ufw

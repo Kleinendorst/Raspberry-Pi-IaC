@@ -6,7 +6,8 @@
       - git
       - vim
       - dnsutils
-      - ufw
+      - rsyslog
+      # - ufw
       - podman
       - snapd
     state: present
@@ -15,50 +16,45 @@
   community.general.snap:
     name: core
     state: present
-- name: Set default policy (incoming)
-  become: true
-  community.general.ufw:
-    direction: incoming
-    policy: deny
-  notify: Restart ufw
-- name: Set default policy (outgoing)
-  become: true
-  community.general.ufw:
-    direction: outgoing
-    policy: allow
-  notify: Restart ufw
-- name: Set default policy (routed)
-  become: true
-  community.general.ufw:
-    direction: routed
-    policy: allow
-  notify: Restart ufw
-- name: Allow forwarding in ufw
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/ufw/sysctl.conf
-    regexp: '^#net/ipv4/ip_forward=1$'
-    line: 'net/ipv4/ip_forward=1'
-  notify: Restart ufw
-- name: Allow forwarding in sysctl
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/sysctl.conf
-    regexp: '^#net\.ipv4\.ip_forward=1$'
-    line: net.ipv4.ip_forward=1
-- name: Allow all access to ssh
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: ssh
-    proto: tcp
-  notify: Restart ufw
-- name: Enable ufw
-  become: true
-  community.general.ufw:
-    state: enabled
-- name: Install Snapcraft
-  become: true
-  ansible.builtin.apt:
-    name:
-    state: present
+# - name: Set default policy (incoming)
+#   become: true
+#   community.general.ufw:
+#     direction: incoming
+#     policy: deny
+#   notify: Restart ufw
+# - name: Set default policy (outgoing)
+#   become: true
+#   community.general.ufw:
+#     direction: outgoing
+#     policy: allow
+#   notify: Restart ufw
+# - name: Set default policy (routed)
+#   become: true
+#   community.general.ufw:
+#     direction: routed
+#     policy: allow
+#   notify: Restart ufw
+# - name: Allow forwarding in ufw
+#   become: true
+#   ansible.builtin.lineinfile:
+#     path: /etc/ufw/sysctl.conf
+#     regexp: '^#net/ipv4/ip_forward=1$'
+#     line: 'net/ipv4/ip_forward=1'
+#   notify: Restart ufw
+# - name: Allow forwarding in sysctl
+#   become: true
+#   ansible.builtin.lineinfile:
+#     path: /etc/sysctl.conf
+#     regexp: '^#net\.ipv4\.ip_forward=1$'
+#     line: net.ipv4.ip_forward=1
+# - name: Allow all access to ssh
+#   become: true
+#   community.general.ufw:
+#     rule: allow
+#     port: ssh
+#     proto: tcp
+#   notify: Restart ufw
+# - name: Enable ufw
+#   become: true
+#   community.general.ufw:
+#     state: enabled

@@ -37,13 +37,13 @@
     dest: /etc/nginx/conf.d/actual.conf
     mode: '0644'
   notify: Restart Nginx
-- name: Allow https through firewall
-  become: true
-  community.general.ufw:
-    rule: allow
-    port: https
-    proto: tcp
-  notify: Restart ufw
+# - name: Allow https through firewall
+#   become: true
+#   community.general.ufw:
+#     rule: allow
+#     port: https
+#     proto: tcp
+#   notify: Restart ufw
 - name: Debug
   ansible.builtin.debug:
     msg: "Don't forget to manually add a DNS record for actual.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
