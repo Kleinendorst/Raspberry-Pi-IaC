@@ -51,6 +51,7 @@
       - 127.0.0.1:5053:53/tcp
       - 127.0.0.1:5053:53/udp
       - 127.0.0.1:8080:80
+    hostname: "{{ ansible_facts['hostname'] }}" # Setting this will restart the container
     env:
       TZ: 'Europe/Amsterdam'
       WEBPASSWORD: "{{ pi_hole_web_password }}"
