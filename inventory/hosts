@@ -1,2 +1,4 @@
 [raspberry_pis]
-192.168.50.27 hostname=raspberry-pi-1
+# Notice that domain names won't work on intial runs since the DNS service hosting the name
+# is installed as part of the scripting contained within this repo.
+raspberry-pi-1.kleinendorst.info hostname=raspberry-pi-1
