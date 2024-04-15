@@ -5,6 +5,7 @@
     pkg:
       - git
       - vim
+      - dnsutils
       - ufw
       - podman
       - snapd
@@ -39,6 +40,12 @@
     regexp: '^#net/ipv4/ip_forward=1$'
     line: 'net/ipv4/ip_forward=1'
   notify: Restart ufw
+- name: Allow forwarding in sysctl
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.conf
+    regexp: '^#net\.ipv4\.ip_forward=1$'
+    line: net.ipv4.ip_forward=1
 - name: Allow all access to ssh
   become: true
   community.general.ufw:

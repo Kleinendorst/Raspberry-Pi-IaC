@@ -9,15 +9,15 @@
   roles:
     # These roles are disabled after they have being applied once for performance reasons, it should be safe to enable them again.
     # Notice that this role changes some settings on reruns (on the "Change various sysctl-settings" task), doesn't seem problematic though.
-    - role: devsec.hardening.ssh_hardening
-      become: true
-    - role: hostname
+    # - role: devsec.hardening.ssh_hardening
+    #   become: true
+    # - role: hostname
     - role: basic-intalls
-    - role: user
-    - role: cloudflare-ddns
-    - role: reverse-proxy
-    - role: actual
-    # - role: pi-hole
+    # - role: user
+    # - role: cloudflare-ddns
+    # - role: reverse-proxy
+    # - role: actual
+    - role: pi-hole
   vars:
     # devsec.hardening.ssh_hardening vars:
     ssh_allow_users: 'thomas'
