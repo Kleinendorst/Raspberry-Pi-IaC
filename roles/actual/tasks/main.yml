@@ -12,23 +12,48 @@
     path: "/home/{{ actual_username }}/actual_data"
     state: directory
     mode: '0700'
-# Unfortunatelly I can't set the web password in the container, a user has to manually do this on startup.
-- name: Start the Actual container
+- name: Start the podman-restart.service
   become: true
   become_user: "{{ actual_username }}"
-  containers.podman.podman_container:
-    name: actual-server
-    image: docker.io/actualbudget/actual-server:24.4.0
-    # TODO: Enable containers on boot
-    # I expected podman containers to restart on boot with this policy but apparently the documentation specifically
-    # states that they won't do this. There seems to be an involved workaround to get this to work whilst keeping the
-    # containers "rootless". See this guide: https://linuxhandbook.com/autostart-podman-containers/
-    restart_policy: on-failure
-    publish:
-      - 127.0.0.1:5006:5006
-    volumes:
-      - "/home/{{ actual_username }}/actual_data:/data"
+  ansible.builtin.systemd:
+    name: podman-restart.service
     state: started
+    enabled: true
+    scope: user
+- name: Gather facts on the actual container
+  become: true
+  become_user: "{{ actual_username }}"
+  containers.podman.podman_container_info:
+    name: actual-server
+  register: actual_server_container_info
+- name: Start the actual container with correct systemd linking
+  when: "'no such container' in actual_server_container_info.stderr"
+  become: true
+  become_user: "{{ actual_username }}"
+  block:
+    - name: Start the Actual container
+      containers.podman.podman_container:
+        name: actual-server
+        image: docker.io/actualbudget/actual-server:24.4.0
+        restart_policy: always
+        publish:
+          - 127.0.0.1:5006:5006
+        volumes:
+          - "/home/{{ actual_username }}/actual_data:/data"
+        state: stopped
+        recreate: true
+        generate_systemd:
+          path: "/home/{{ actual_username }}/.config/systemd/user/"
+          restart_policy: always
+      notify: Reload systemd (daemon-reload)
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+    - name: Enable the newly created systemd service for user
+      ansible.builtin.systemd:
+        name: container-actual-server.service
+        state: started
+        enabled: true
+        scope: user
 - name: Install certificate for actual.kleinendorst.info
   become: true
   ansible.builtin.command:

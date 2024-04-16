@@ -88,6 +88,10 @@
       # Add Snapcraft to $PATH
       export PATH=$PATH:/snap/bin
 
+      # Set XDG_RUNTIME_DIR variable necessary for running systemctl as user
+      # See: https://superuser.com/questions/1561076/systemctl-user-failed-to-connect-to-bus-no-such-file-or-directory-debian-9#answers-header
+      export XDG_RUNTIME_DIR=/run/user/$(id -u $otherUser)
+
       # Starship
       eval "$(starship init zsh)"
 - name: Change the default shell of the current user
