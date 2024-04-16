@@ -9,3 +9,9 @@
   ansible.builtin.systemd:
     name: ufw.service
     state: restarted
+- name: Reload systemd (daemon-reload)
+  become: true
+  become_user: "{{ pi_hole_username }}"
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    scope: user

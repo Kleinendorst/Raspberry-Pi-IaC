@@ -41,7 +41,7 @@
         volumes:
           - "/home/{{ actual_username }}/actual_data:/data"
         state: stopped
-        recreate: true
+        # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
         generate_systemd:
           path: "/home/{{ actual_username }}/.config/systemd/user/"
           restart_policy: always
