@@ -1,16 +1,36 @@
 ---
 # The ZSH installation instructions are sourced from this blog:
 # https://harshithashok.com/tools/oh-my-zsh-with-starship/
-- name: Create a new user
-  become: true
-  ansible.builtin.user:
-    append: true
-    groups:
-      - users
-    name: "{{ user_username }}"
-    # Salt is necessary, see: https://stackoverflow.com/questions/56869949/ansible-user-module-always-shows-changed
-    password: "{{ user_password | password_hash('sha512', password_salt) }}"
+- name: Create the user
   when: user_username is not undefined # Skip when no user is provided, we'll asume we're targetting the Ansible user.
+  block:
+    - name: Create a new user
+      become: true
+      ansible.builtin.user:
+        append: true
+        groups:
+          - users
+        name: "{{ user_username }}"
+        # Salt is necessary, see: https://stackoverflow.com/questions/56869949/ansible-user-module-always-shows-changed
+        password: "{{ user_password | password_hash('sha512', password_salt) }}"
+    - name: Ensure .ssh directory exists in user home
+      become: true
+      become_user: "{{ user_username }}"
+      ansible.builtin.file:
+        path: "/home/{{ user_username }}/.ssh"
+        state: directory
+        mode: "0700"
+    # We're assuming that the ansible user has its authorized keys setup before running the playbook and that all created users using this
+    # rule want the same machines to be able to access them.
+    - name: Copy over authorized keys from the main ansible user
+      become: true
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/home/{{ ansible_facts['user_id'] }}/.ssh/authorized_keys"
+        dest: "/home/{{ user_username }}/.ssh/"
+        owner: "{{ user_username }}"
+        group: "{{ user_username }}"
+        mode: "0600"
 - name: Set fact for defining the user which should run the next modules
   ansible.builtin.set_fact:
     target_user: "{{ ansible_facts['user_id'] if user_username is undefined else user_username }}"
@@ -87,10 +107,6 @@
     block: |-
       # Add Snapcraft to $PATH
       export PATH=$PATH:/snap/bin
-
-      # Set XDG_RUNTIME_DIR variable necessary for running systemctl as user
-      # See: https://superuser.com/questions/1561076/systemctl-user-failed-to-connect-to-bus-no-such-file-or-directory-debian-9#answers-header
-      export XDG_RUNTIME_DIR=/run/user/$(id -u $otherUser)
 
       # Starship
       eval "$(starship init zsh)"

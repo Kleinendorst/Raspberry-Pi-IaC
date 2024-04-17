@@ -20,7 +20,6 @@
     - role: pi-hole
   vars:
     # devsec.hardening.ssh_hardening vars:
-    ssh_allow_users: 'thomas'
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
     ssh_client_password_login: false # Default, but duplicated here for documentation purpose.
   tasks:
