@@ -5,6 +5,7 @@
   vars:
     user_username: "{{ pi_hole_username }}"
     user_password: "{{ pi_hole_password }}"
+    user_use_podman_restart: true
 - name: Create the /etc-pihole directory in the home directory (will be mounted to the container)
   become: true
   become_user: "{{ pi_hole_username }}"
@@ -34,14 +35,6 @@
     # changes the user of the folder to a UID only known within the container. This command basically doesn't need to
     # change anything at this point so we'll ignore the error for now.
     - "'set_mode_if_different' not in command_result.module_stdout"
-- name: Start the podman-restart.service
-  become: true
-  become_user: "{{ pi_hole_username }}"
-  ansible.builtin.systemd:
-    name: podman-restart.service
-    state: started
-    enabled: true
-    scope: user
 - name: Gather facts on the pi-hole container
   become: true
   become_user: "{{ pi_hole_username }}"

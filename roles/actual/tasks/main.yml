@@ -5,6 +5,7 @@
   vars:
     user_username: "{{ actual_username }}"
     user_password: "{{ actual_password }}"
+    user_use_podman_restart: true
 - name: Create a directory for holding actual's (volume) data
   become: true
   become_user: "{{ actual_username }}"
@@ -12,14 +13,6 @@
     path: "/home/{{ actual_username }}/actual_data"
     state: directory
     mode: '0700'
-- name: Start the podman-restart.service
-  become: true
-  become_user: "{{ actual_username }}"
-  ansible.builtin.systemd:
-    name: podman-restart.service
-    state: started
-    enabled: true
-    scope: user
 - name: Gather facts on the actual container
   become: true
   become_user: "{{ actual_username }}"
