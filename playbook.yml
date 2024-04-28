@@ -15,7 +15,7 @@
     - role: basic-intalls
     - role: user
     - role: cloudflare-ddns
-    - role: reverse-proxy
+    - role: nginx
     - role: actual
     - role: pi-hole
   vars:
