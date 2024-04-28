@@ -123,4 +123,4 @@
     state: started
     enabled: true
     scope: user
-  when: user_use_podman_restart
+  when: user_start_podman_restart

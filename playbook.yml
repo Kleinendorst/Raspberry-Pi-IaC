@@ -17,6 +17,7 @@
     - role: cloudflare-ddns
     - role: nginx
     - role: actual
+    - role: changedetection
     - role: pi-hole
   vars:
     # devsec.hardening.ssh_hardening vars:

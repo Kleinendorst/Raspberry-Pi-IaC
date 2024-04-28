@@ -1,11 +1,11 @@
 ---
-- name: Create a new user
+- name: Include user role
   ansible.builtin.include_role:
     name: user
   vars:
     user_username: "{{ actual_username }}"
     user_password: "{{ actual_password }}"
-    user_use_podman_restart: true
+    user_start_podman_restart: true
 - name: Create a directory for holding actual's (volume) data
   become: true
   become_user: "{{ actual_username }}"

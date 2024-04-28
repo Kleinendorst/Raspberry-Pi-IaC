@@ -1,0 +1,55 @@
+---
+- name: Include user role
+  ansible.builtin.include_role:
+    name: user
+  vars:
+    user_username: "{{ changedetection_username }}"
+    user_password: "{{ changedetection_password }}"
+    user_start_podman_restart: true
+- name: Create a directory for holding changedetection's (volume) data
+  become: true
+  become_user: "{{ changedetection_username }}"
+  ansible.builtin.file:
+    path: "/home/{{ changedetection_username }}/changedetection_data"
+    state: directory
+    mode: '0700'
+- name: Gather facts on the changedetection container
+  become: true
+  become_user: "{{ changedetection_username }}"
+  containers.podman.podman_container_info:
+    name: changedetection-server
+  register: changedetection_server_container_info
+- name: Start the changedetection container with correct systemd linking
+  when: "'no such container' in changedetection_server_container_info.stderr"
+  become: true
+  become_user: "{{ changedetection_username }}"
+  block:
+    - name: Start the changedetection container
+      containers.podman.podman_container:
+        name: changedetection-server
+        image: docker.io/dgtlmoon/changedetection.io:0.45.21
+        restart_policy: always
+        publish:
+          - 127.0.0.1:5000:5000
+        volumes:
+          - "/home/{{ changedetection_username }}/changedetection_data:/datastore"
+        state: stopped
+        # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
+        generate_systemd:
+          path: "/home/{{ changedetection_username }}/.config/systemd/user/"
+          restart_policy: always
+      notify: Reload systemd (daemon-reload)
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+    - name: Enable the newly created systemd service for user
+      ansible.builtin.systemd:
+        name: container-changedetection-server.service
+        state: started
+        enabled: true
+        scope: user
+- name: Include simple-reverse-proxy role
+  ansible.builtin.include_role:
+    name: simple-reverse-proxy
+  vars:
+    simple_reverse_proxy_internal_port: 5000
+    simple_reverse_proxy_internal_subdomain: changedetection

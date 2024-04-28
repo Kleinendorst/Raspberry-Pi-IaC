@@ -5,7 +5,7 @@
   vars:
     user_username: "{{ pi_hole_username }}"
     user_password: "{{ pi_hole_password }}"
-    user_use_podman_restart: true
+    user_start_podman_restart: true
 - name: Create the /etc-pihole directory in the home directory (will be mounted to the container)
   become: true
   become_user: "{{ pi_hole_username }}"

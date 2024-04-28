@@ -1,5 +1,5 @@
 ---
-- name: Create a new user
+- name: Include user role
   ansible.builtin.include_role:
     name: user
   vars:
