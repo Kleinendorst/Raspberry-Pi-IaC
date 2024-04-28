@@ -1,0 +1,25 @@
+---
+- name: "Install certificate for {{ simple_reverse_proxy_internal_subdomain }}.kleinendorst.info"
+  become: true
+  ansible.builtin.command:
+    cmd: "register_certbot_domain.sh {{ simple_reverse_proxy_internal_subdomain }}.kleinendorst.info"
+    creates: "/etc/letsencrypt/live/{{ simple_reverse_proxy_internal_subdomain }}.kleinendorst.info" # The certificate directory
+- name: Set Nginx configuration
+  become: true
+  ansible.builtin.template:
+    src: nginx-configuration.conf.j2
+    dest: "/etc/nginx/conf.d/{{ simple_reverse_proxy_internal_subdomain }}.conf"
+    mode: '0644'
+  notify: Restart Nginx
+# - name: Allow https through firewall
+#   become: true
+#   community.general.ufw:
+#     rule: allow
+#     port: https
+#     proto: tcp
+#   notify: Restart ufw
+- name: Debug
+  ansible.builtin.debug:
+    msg: >-
+      Don't forget to manually add a DNS record for {{ simple_reverse_proxy_internal_subdomain }}.kleinendorst.info
+      pointing to: {{ ansible_facts['default_ipv4']['address'] }}.

@@ -47,25 +47,9 @@
         state: started
         enabled: true
         scope: user
-- name: Install certificate for actual.kleinendorst.info
-  become: true
-  ansible.builtin.command:
-    cmd: register_certbot_domain.sh actual.kleinendorst.info
-    creates: /etc/letsencrypt/live/actual.kleinendorst.info # The certificate directory
-- name: Set Nginx configuration
-  become: true
-  ansible.builtin.template:
-    src: actual.conf.j2
-    dest: /etc/nginx/conf.d/actual.conf
-    mode: '0644'
-  notify: Restart Nginx
-# - name: Allow https through firewall
-#   become: true
-#   community.general.ufw:
-#     rule: allow
-#     port: https
-#     proto: tcp
-#   notify: Restart ufw
-- name: Debug
-  ansible.builtin.debug:
-    msg: "Don't forget to manually add a DNS record for actual.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
+- name: Include simple-reverse-proxy role
+  ansible.builtin.include_role:
+    name: simple-reverse-proxy
+  vars:
+    simple_reverse_proxy_internal_port: 5006
+    simple_reverse_proxy_internal_subdomain: actual
