@@ -19,17 +19,19 @@
   containers.podman.podman_container_info:
     name: actual-server
   register: actual_server_container_info
-# This step doesn't work correctly when updating the contianer in any way. In this case it will simply skip the step.
-# The easiest workaround is to remove the container altogether and rerun.
 - name: Start the actual container with correct systemd linking
-  when: "'no such container' in actual_server_container_info.stderr"
+  when: not actual_server_container_info.containers[0]["Config"]["Image"] is match(".*:" + actual_version)
   become: true
   become_user: "{{ actual_username }}"
   block:
+    - name: Remove the actual container
+      containers.podman.podman_container:
+        name: actual-server
+        state: absent
     - name: Start the Actual container
       containers.podman.podman_container:
         name: actual-server
-        image: docker.io/actualbudget/actual-server:24.5.0
+        image: "docker.io/actualbudget/actual-server:{{ actual_version }}"
         restart_policy: always
         publish:
           - 127.0.0.1:5006:5006
