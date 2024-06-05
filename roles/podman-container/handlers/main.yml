@@ -1,7 +1,7 @@
 ---
 - name: Reload systemd (daemon-reload)
   become: true
-  become_user: "{{ actual_username }}"
+  become_user: "{{ container_user }}"
   ansible.builtin.systemd_service:
     daemon_reload: true
     scope: user
