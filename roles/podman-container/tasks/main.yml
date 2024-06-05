@@ -29,6 +29,9 @@
   # ⬇️ Run either when the image doesn't exist or is outdated
   when: container_info.containers | length  == 0 or not container_info.containers[0]["Config"]["Image"] is match(".*:" + podman_container_tag)
   block:
+    # The image would already be downloaded in the step where the container is started (if the image is missing from the system). However,
+    # this specifically fixes an issue where the DNS server is temporarily unavailable when the pi-hole container is removed first and then recreated.
+    # By ensuring that the correct image is already on the machine it doesn't fail when downloading because it can't resolve the address.
     - name: Pull the requested image before removal of container
       containers.podman.podman_image:
         name: "{{ podman_container_image }}:{{ podman_container_tag }}"
