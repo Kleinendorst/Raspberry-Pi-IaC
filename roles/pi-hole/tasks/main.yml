@@ -5,84 +5,34 @@
   vars:
     user_username: "{{ pi_hole_username }}"
     user_password: "{{ pi_hole_password }}"
-    user_start_podman_restart: true
-- name: Create the /etc-pihole directory in the home directory (will be mounted to the container)
-  become: true
-  become_user: "{{ pi_hole_username }}"
-  ansible.builtin.file:
-    path: "/home/{{ pi_hole_username }}/etc-pihole"
-    state: directory
-    mode: '0700'
-  register: command_result
-  failed_when:
-    - command_result.changed == false
-    - command_result.rc != 0
-    # This is quite an interesting problem. The command fails because, after initial creation, the pod using the volume
-    # changes the user of the folder to a UID only known within the container. This command basically doesn't need to
-    # change anything at this point so we'll ignore the error for now.
-    - "'set_mode_if_different' not in command_result.module_stdout"
-- name: Create the /etc-dnsmasq.d directory in the home directory (will be mounted to the container)
-  become: true
-  become_user: "{{ pi_hole_username }}"
-  ansible.builtin.file:
-    path: "/home/{{ pi_hole_username }}/etc-dnsmasq.d"
-    state: directory
-    mode: '0700'
-  failed_when:
-    - command_result.changed == false
-    - command_result.rc != 0
-    # This is quite an interesting problem. The command fails because, after initial creation, the pod using the volume
-    # changes the user of the folder to a UID only known within the container. This command basically doesn't need to
-    # change anything at this point so we'll ignore the error for now.
-    - "'set_mode_if_different' not in command_result.module_stdout"
-- name: Gather facts on the pi-hole container
-  become: true
-  become_user: "{{ pi_hole_username }}"
-  containers.podman.podman_container_info:
-    name: pi-hole
-  register: pi_hole_container_info
-- name: Start the pi-hole container with correct systemd linking
-  when: "'no such container' in pi_hole_container_info.stderr"
-  become: true
-  become_user: "{{ pi_hole_username }}"
-  block:
-    - name: Start the Pi hole container
-      containers.podman.podman_container:
-        name: pi-hole
-        image: docker.io/pihole/pihole:2024.03.2
-        restart_policy: always
-        publish:
-        # It seems we can't use authbind in combination with Podman, see: https://github.com/containers/podman/issues/13426.
-        # Instead we'll map to a higher port number and install and use the ufw firewall to forward packets to the local port.
-          - 127.0.0.1:5053:53/tcp
-          - 127.0.0.1:5053:53/udp
-          - 127.0.0.1:8080:80
-        hostname: "{{ ansible_facts['hostname'] }}" # Setting this will restart the container
-        env:
-          TZ: 'Europe/Amsterdam'
-          WEBPASSWORD: "{{ pi_hole_web_password }}"
-          # VIRTUAL_HOST: 'pi-hole.kleinendorst.info'
-          # FTLCONF_LOCAL_IPV4: "{{ ansible_facts['default_ipv4']['address'] }}"
-          PIHOLE_DNS_: 1.1.1.1;1.0.0.1
-          DNSMASQ_USER: root
-          INTERFACE: tap0
-        volumes:
-          - "/home/{{ pi_hole_username }}/etc-pihole:/etc/pihole"
-          - "/home/{{ pi_hole_username }}/etc-dnsmasq.d:/etc/dnsmasq.d"
-        state: stopped
-        # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
-        generate_systemd:
-          path: "/home/{{ pi_hole_username }}/.config/systemd/user/"
-          restart_policy: always
-      notify: Reload systemd (daemon-reload)
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers
-    - name: Enable the newly created systemd service for user
-      ansible.builtin.systemd:
-        name: container-pi-hole.service
-        state: started
-        enabled: true
-        scope: user
+    user_start_podman_restart: true # TODO: Remove this and move it to the podman-container role
+- name: Create the pi-hole container
+  ansible.builtin.include_role:
+    name: podman-container
+    apply:
+      become: true
+      become_user: "{{ pi_hole_username }}"
+  vars:
+    podman_container_name: pi-hole
+    podman_container_image: docker.io/pihole/pihole
+    podman_container_tag: "{{ pi_hole_version }}"
+    podman_container_publish:
+      - 127.0.0.1:5053:53/tcp
+      - 127.0.0.1:5053:53/udp
+      - 127.0.0.1:8080:80
+    podman_container_volumes:
+      - name: etc-pihole
+        mnt: /etc/pihole
+      - name: etc-dnsmasq.d
+        mnt: /etc/dnsmasq.d
+    podman_container_env:
+      TZ: 'Europe/Amsterdam'
+      WEBPASSWORD: "{{ pi_hole_web_password }}"
+      # VIRTUAL_HOST: 'pi-hole.kleinendorst.info'
+      # FTLCONF_LOCAL_IPV4: "{{ ansible_facts['default_ipv4']['address'] }}"
+      PIHOLE_DNS_: 1.1.1.1;1.0.0.1
+      DNSMASQ_USER: root
+      INTERFACE: tap0
 - name: Install certificate for pi-hole.kleinendorst.info
   become: true
   ansible.builtin.command:

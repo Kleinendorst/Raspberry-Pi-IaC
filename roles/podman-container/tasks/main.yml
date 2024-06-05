@@ -1,0 +1,75 @@
+---
+- name: Run whoami
+  ansible.builtin.command: whoami
+  changed_when: false
+  register: whoami
+- name: Register current user in a variable
+  ansible.builtin.set_fact:
+    container_user: "{{ whoami.stdout }}"
+- name: Create mount directories
+  ansible.builtin.file:
+    path: "/home/{{ container_user }}/{{ item.name }}"
+    state: directory
+    mode: '0700'
+  loop: "{{ podman_container_volumes }}"
+  loop_control:
+    label: "{{ item.name }}"
+    index_var: index
+  register: command_result
+  failed_when:
+    # This is quite an interesting problem. The command fails because, after initial creation, the pod using the volume
+    # changes the user of the folder to a UID only known within the container. This command basically doesn't need to
+    # change anything at this point so we'll ignore the error for now.
+    - "command_result.module_stdout is defined and'set_mode_if_different' not in command_result.module_stdout"
+- name: Gather facts on the container
+  containers.podman.podman_container_info:
+    name: "{{ podman_container_name }}"
+  register: container_info
+- name: Start the container with correct systemd linking
+  # ⬇️ Run either when the image doesn't exist or is outdated
+  when: container_info.containers | length  == 0 or not container_info.containers[0]["Config"]["Image"] is match(".*:" + podman_container_tag)
+  block:
+    - name: Pull the requested image before removal of container
+      containers.podman.podman_image:
+        name: "{{ podman_container_image }}:{{ podman_container_tag }}"
+        state: present
+    - name: Make sure the container isn't present
+      containers.podman.podman_container:
+        name: "{{ podman_container_name }}"
+        state: absent
+    - name: Map volumes to Podman accepted list
+      ansible.builtin.set_fact:
+        volumes: "{{ volumes + ['/home/' + container_user + '/' + item.name + ':' + item.mnt] }}"
+      with_items: "{{ podman_container_volumes }}"
+      vars:
+        volumes: []
+    - name: Start the container
+      containers.podman.podman_container:
+        name: "{{ podman_container_name }}"
+        image: "{{ podman_container_image }}:{{ podman_container_tag }}"
+        restart_policy: always
+        hostname: "{{ ansible_facts['hostname'] }}"
+        publish: "{{ podman_container_publish }}"
+        env: "{{ podman_container_env }}"
+        volumes: "{{ volumes }}"
+        state: stopped
+        # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
+        generate_systemd:
+          path: "/home/{{ container_user }}/.config/systemd/user/"
+          restart_policy: always
+      notify: Reload systemd (daemon-reload)
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+    # On restarts this seems to be a bit buggy. Some manual waiting might be necessary and running:
+    # systemctl --user daemon-reload && systemctl --user start {{ service_name }}
+    # The retry also doesn't work as of yet. Seems that doing a daemon-reload and then refreshing the task seems to work
+    - name: Enable the newly created systemd service for user
+      ansible.builtin.systemd:
+        name: "container-{{ podman_container_name }}.service"
+        state: started
+        enabled: true
+        scope: user
+      retries: 3
+      delay: 3
+      register: result
+      until: "'Error.EBUSY' not in result.msg"

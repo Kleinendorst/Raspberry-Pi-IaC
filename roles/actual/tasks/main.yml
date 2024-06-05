@@ -5,52 +5,22 @@
   vars:
     user_username: "{{ actual_username }}"
     user_password: "{{ actual_password }}"
-    user_start_podman_restart: true
-- name: Create a directory for holding actual's (volume) data
-  become: true
-  become_user: "{{ actual_username }}"
-  ansible.builtin.file:
-    path: "/home/{{ actual_username }}/actual_data"
-    state: directory
-    mode: '0700'
-- name: Gather facts on the actual container
-  become: true
-  become_user: "{{ actual_username }}"
-  containers.podman.podman_container_info:
-    name: actual-server
-  register: actual_server_container_info
-- name: Start the actual container with correct systemd linking
-  when: not actual_server_container_info.containers[0]["Config"]["Image"] is match(".*:" + actual_version)
-  become: true
-  become_user: "{{ actual_username }}"
-  block:
-    - name: Remove the actual container
-      containers.podman.podman_container:
-        name: actual-server
-        state: absent
-    - name: Start the Actual container
-      containers.podman.podman_container:
-        name: actual-server
-        image: "docker.io/actualbudget/actual-server:{{ actual_version }}"
-        restart_policy: always
-        publish:
-          - 127.0.0.1:5006:5006
-        volumes:
-          - "/home/{{ actual_username }}/actual_data:/data"
-        state: stopped
-        # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
-        generate_systemd:
-          path: "/home/{{ actual_username }}/.config/systemd/user/"
-          restart_policy: always
-      notify: Reload systemd (daemon-reload)
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers
-    - name: Enable the newly created systemd service for user
-      ansible.builtin.systemd:
-        name: container-actual-server.service
-        state: started
-        enabled: true
-        scope: user
+    user_start_podman_restart: true # TODO: Remove this and move it to the podman-container role
+- name: Create the actual container
+  ansible.builtin.include_role:
+    name: podman-container
+    apply:
+      become: true
+      become_user: "{{ actual_username }}"
+  vars:
+    podman_container_name: actual-server
+    podman_container_image: docker.io/actualbudget/actual-server
+    podman_container_tag: "{{ actual_version }}"
+    podman_container_publish:
+      - 127.0.0.1:5006:5006
+    podman_container_volumes:
+      - name: actual_data
+        mnt: /data
 - name: Include simple-reverse-proxy role
   ansible.builtin.include_role:
     name: simple-reverse-proxy
