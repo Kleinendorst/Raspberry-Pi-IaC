@@ -1,4 +1,11 @@
 ---
+# This role assumes currently that the target container must be restarted on a system reboot.
+- name: Ensure the podman-restart.service is running
+  ansible.builtin.systemd:
+    name: podman-restart.service
+    state: started
+    enabled: true
+    scope: user
 - name: Run whoami
   ansible.builtin.command: whoami
   changed_when: false

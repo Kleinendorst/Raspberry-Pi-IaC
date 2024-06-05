@@ -5,7 +5,6 @@
   vars:
     user_username: "{{ changedetection_username }}"
     user_password: "{{ changedetection_password }}"
-    user_start_podman_restart: true # TODO: Remove this and move it to the podman-container role
 - name: Create the changedetection container
   ansible.builtin.include_role:
     name: podman-container

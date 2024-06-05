@@ -5,7 +5,6 @@
   vars:
     user_username: "{{ actual_username }}"
     user_password: "{{ actual_password }}"
-    user_start_podman_restart: true # TODO: Remove this and move it to the podman-container role
 - name: Create the actual container
   ansible.builtin.include_role:
     name: podman-container

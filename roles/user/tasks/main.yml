@@ -115,12 +115,3 @@
   ansible.builtin.user:
     name: "{{ target_user }}"
     shell: /usr/bin/zsh
-- name: Start the podman-restart.service
-  become: true
-  become_user: "{{ target_user }}"
-  ansible.builtin.systemd:
-    name: podman-restart.service
-    state: started
-    enabled: true
-    scope: user
-  when: user_start_podman_restart
