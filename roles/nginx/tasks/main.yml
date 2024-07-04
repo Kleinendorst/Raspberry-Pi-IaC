@@ -2,7 +2,7 @@
 - name: Add an apt key by id from a keyserver
   become: true
   ansible.builtin.apt_key:
-    url: https://nginx.org/packages/keys/nginx_signing.key
+    url: https://nginx.org/keys/nginx_signing.key
     state: present
 - name: Add Nginx repository into sources list
   become: true
