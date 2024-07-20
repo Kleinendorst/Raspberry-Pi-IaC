@@ -1,7 +1,9 @@
 #!/bin/bash
+# For the --post-hook argument see: https://stackoverflow.com/questions/70002636/https-certbot-certificate-is-renewed-but-connection-not-secure-till-you-restart
 /snap/bin/certbot certonly \
         --dns-cloudflare \
         --dns-cloudflare-propagation-seconds 120 \
         --dns-cloudflare-credentials '{{ cloudflare_credential_dir_path }}/{{ cloudflare_credential_filename }}' \
+        --post-hook "nginx -s reload" \
         --agree-tos -m {{ administration_email }} \
         -d $1
