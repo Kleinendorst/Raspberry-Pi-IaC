@@ -1,2 +1,9 @@
 ---
+# Prometheus
 prometheus_version: "2.54.1"
+prometheus_targets:
+  node:
+    targets:
+      - raspberry-pi-1.kleinendorst.info:9100
+# Node exporter
+node_exporter_version: "1.8.2"

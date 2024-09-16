@@ -1,4 +1,7 @@
 ---
-- name: Include Prometheus role
+- name: Include the Prometheus role
   ansible.builtin.include_role:
     name: prometheus.prometheus.prometheus
+- name: Include the Prometheus - node exporter role
+  ansible.builtin.include_role:
+    name: prometheus.prometheus.node_exporter
