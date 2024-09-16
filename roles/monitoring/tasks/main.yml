@@ -1,0 +1,4 @@
+---
+- name: Include Prometheus role
+  ansible.builtin.include_role:
+    name: prometheus.prometheus.prometheus
