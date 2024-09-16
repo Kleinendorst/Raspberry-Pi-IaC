@@ -5,3 +5,6 @@
 - name: Include the Prometheus - node exporter role
   ansible.builtin.include_role:
     name: prometheus.prometheus.node_exporter
+- name: Include the Prometheus - alertmanager role
+  ansible.builtin.include_role:
+    name: prometheus.prometheus.alertmanager

@@ -3,7 +3,24 @@
 prometheus_version: "2.54.1"
 prometheus_targets:
   node:
-    targets:
-      - raspberry-pi-1.kleinendorst.info:9100
+    - targets:
+        - raspberry-pi-1.kleinendorst.info:9100
+prometheus_alertmanager_config:
+  - static_configs:
+      - targets:
+          - raspberry-pi-1.kleinendorst.info:9093
 # Node exporter
 node_exporter_version: "1.8.2"
+# Alertmanager
+alertmanager_version: "0.27.0"
+# Telegram configuration inspired by this source:
+# https://www.stranatesta.eu/tech/how-to-configure-prometheus-alertmanager-to-send-alerts-to-telegram/#configure-alertmanager
+alertmanager_receivers:
+  - name: telegram
+    telegram_configs:
+      - bot_token: "{{ telegram_bot_token }}"
+        api_url: 'https://api.telegram.org'
+        chat_id: "{{ telegram_chat_id }}"
+        parse_mode: ''
+alertmanager_route:
+  receiver: telegram
