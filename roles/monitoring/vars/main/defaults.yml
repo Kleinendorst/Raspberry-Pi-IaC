@@ -11,6 +11,10 @@ prometheus_alertmanager_config:
           - raspberry-pi-1.kleinendorst.info:9093
 # Node exporter
 node_exporter_version: "1.8.2"
+node_exporter_enabled_collectors:
+  - systemd
+  - {"textfile": {"directory": "{{ node_exporter_textfile_dir }}"}}
+  - processes
 # Alertmanager
 alertmanager_version: "0.27.0"
 # Telegram configuration inspired by this source:
