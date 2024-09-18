@@ -24,3 +24,6 @@ alertmanager_receivers:
         parse_mode: ''
 alertmanager_route:
   receiver: telegram
+# Grafana
+grafana_version: "11.2.0"
+grafana_username: grafana

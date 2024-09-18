@@ -65,6 +65,7 @@
         name: "{{ podman_container_name }}"
         image: "{{ podman_container_image }}:{{ podman_container_tag }}"
         restart_policy: always
+        user: root # Still isolated from host system 👍
         hostname: "{{ ansible_facts['hostname'] }}"
         publish: "{{ podman_container_publish }}"
         env: "{{ podman_container_env }}"
