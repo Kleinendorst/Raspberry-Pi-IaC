@@ -8,4 +8,4 @@
   ansible.builtin.lineinfile:
     path: /etc/hosts
     regexp: "^127.0.1.1.*$"
-    line: "{{ ansible_facts['default_ipv4']['address'] }} {{ hostname }}.kleinendorst.info {{ hostname }}"
+    line: "127.0.0.1 {{ hostname }}.kleinendorst.info {{ hostname }}"
