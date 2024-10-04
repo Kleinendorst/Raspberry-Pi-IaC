@@ -43,22 +43,25 @@
     src: ddns_config.ini.j2
     dest: ~/cloudflare_ddns/ddns_config.ini
     mode: '0600'
-- name: Install Cloudflare DDNS service file
+- name: Install Cloudflare DDNS service files
   become: true
   ansible.builtin.template:
-    src: cloudflare_ddns.service
-    dest: /lib/systemd/system/
+    src: cloudflare_ddns.service.j2
+    dest: "/lib/systemd/system/cloudflare_ddns_{{ item.name }}.service"
     mode: '0644'
-- name: Install Cloudflare DDNS timer file
+  loop: "{{ ddns_addresses }}"
+- name: Install Cloudflare DDNS timer files
   become: true
   ansible.builtin.copy:
     src: cloudflare_ddns.timer
-    dest: /lib/systemd/system/
+    dest: "/lib/systemd/system/cloudflare_ddns_{{ item.name }}.timer"
     mode: '0644'
-- name: Enable the newly added systemd timer
+  loop: "{{ ddns_addresses }}"
+- name: Enable the newly added systemd timers
   become: true
   ansible.builtin.systemd_service:
     daemon_reload: true
-    name: cloudflare_ddns.timer
+    name: "cloudflare_ddns_{{ item.name }}.timer"
     state: started
     enabled: true
+  loop: "{{ ddns_addresses }}"

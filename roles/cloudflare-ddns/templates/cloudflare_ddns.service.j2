@@ -7,7 +7,7 @@ After=network-online.target
 Type=oneshot
 User=cloudflare_ddns
 Group=cloudflare_ddns
-ExecStart=/home/cloudflare_ddns/bin/cloudflare_ddns/cloudflare_ddns.sh {{ wireguard_address }}
+ExecStart=/home/cloudflare_ddns/bin/cloudflare_ddns/cloudflare_ddns.sh {{ item.address }}
 
 [Install]
 WantedBy=default.target
