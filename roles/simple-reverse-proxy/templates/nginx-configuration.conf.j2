@@ -1,6 +1,6 @@
 server {
-  listen 443 ssl;
-  listen [::]:443 ssl;
+  listen {{ simple_reverse_proxy_external_port }} ssl;
+  listen [::]:{{ simple_reverse_proxy_external_port }} ssl;
   server_name {{ simple_reverse_proxy_internal_subdomain }}.kleinendorst.info;
 
   client_max_body_size 20M;
