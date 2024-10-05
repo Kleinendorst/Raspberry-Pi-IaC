@@ -1,0 +1,10 @@
+---
+- name: Install Cloudflared
+  become: true
+  ansible.builtin.apt:
+    deb: https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64.deb
+- name: Install the Cloudflared tunnel as a systemd service
+  become: true
+  ansible.builtin.command:
+    cmd: "cloudflared service install {{ cloudflared_refresh_token }}"
+    creates: /etc/systemd/system/cloudflared.service

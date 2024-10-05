@@ -20,6 +20,8 @@
     - role: changedetection
     - role: pi-hole
     - role: monitoring
+    - role: wedding
+    - role: cloudflared
   vars:
     # devsec.hardening.ssh_hardening vars:
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
