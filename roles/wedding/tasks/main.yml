@@ -12,6 +12,7 @@
     username: "{{ github_registry_user }}"
     password: "{{ github_registry_token }}"
     registry: ghcr.io
+  changed_when: false
 - name: Create the wedding container
   ansible.builtin.include_role:
     name: podman-container
