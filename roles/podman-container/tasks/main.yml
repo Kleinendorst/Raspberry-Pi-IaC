@@ -56,8 +56,8 @@
       ansible.builtin.meta: flush_handlers
     - name: Map volumes to Podman accepted list
       ansible.builtin.set_fact:
-        podman_container_volumes: "{{ podman_container_volumes + ['/home/' + container_user + '/' + item.name + ':' + item.mnt] }}"
-      with_items: "{{ podman_simple_container_volumes }}"
+        container_volumes: "{{ container_volumes | default(podman_container_volumes) + ['/home/' + container_user + '/' + item.name + ':' + item.mnt] }}"
+      loop: "{{ podman_simple_container_volumes }}"
     - name: Start the container
       containers.podman.podman_container:
         name: "{{ podman_container_name }}"
@@ -68,7 +68,7 @@
         hostname: "{{ ansible_facts['hostname'] }}"
         publish: "{{ podman_container_publish }}"
         env: "{{ podman_container_env }}"
-        volumes: "{{ podman_container_volumes }}"
+        volumes: "{{ container_volumes }}"
         state: stopped
         # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
         generate_systemd:
