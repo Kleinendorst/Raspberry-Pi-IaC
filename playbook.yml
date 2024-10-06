@@ -15,13 +15,14 @@
     - role: basic-intalls
     - role: user
     - role: cloudflare-ddns
+    - role: cloudflared
     - role: nginx
     - role: actual
     - role: changedetection
     - role: pi-hole
     - role: monitoring
+    - role: postgres
     - role: wedding
-    - role: cloudflared
   vars:
     # devsec.hardening.ssh_hardening vars:
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.

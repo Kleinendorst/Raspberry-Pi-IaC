@@ -25,14 +25,14 @@
     podman_container_tag: "{{ wedding_version }}"
     podman_container_publish:
       - 127.0.0.1:3001:3000
-    podman_container_volumes: []
+    podman_simple_container_volumes: []
     podman_container_env:
-      DATABASE_HOST: 'localhost' # TODO: Needs to be fixed later...
+      DATABASE_HOST: 'postgres.kleinendorst.info'
       DATABASE_PORT: 5432
       DATABASE_DBNAME: wedding
       DATABASE_USER: "{{ postgres.user }}"
       DATABASE_PASSWORD: "{{ postgres.password }}"
       SESSION_SECRET: "{{ wedding_env.secret }}"
-      # NODE_ENV: production # TODO: Enable when ready for secure cookie testing...
+      NODE_ENV: production
       WEDDING_FULL_ACCESS_CODE: "{{ wedding_env.full_access_code }}"
       WEDDING_NIGHT_ACCESS_CODE: "{{ wedding_env.night_access_code }}"

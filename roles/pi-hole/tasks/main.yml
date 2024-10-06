@@ -19,7 +19,7 @@
       - 127.0.0.1:5053:53/tcp
       - 127.0.0.1:5053:53/udp
       - 127.0.0.1:8080:80
-    podman_container_volumes:
+    podman_simple_container_volumes:
       - name: etc-pihole
         mnt: /etc/pihole
       - name: etc-dnsmasq.d

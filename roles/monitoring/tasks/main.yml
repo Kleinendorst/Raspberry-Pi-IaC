@@ -41,7 +41,7 @@
       GF_INSTALL_PLUGINS: "grafana-clock-panel 2.1.7"
     podman_container_publish:
       - 127.0.0.1:3000:3000
-    podman_container_volumes:
+    podman_simple_container_volumes:
       - name: grafana_storage
         mnt: /var/lib/grafana
 - name: Include simple-reverse-proxy role - Grafana

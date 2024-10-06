@@ -17,7 +17,7 @@
     podman_container_tag: "{{ changedetection_version }}"
     podman_container_publish:
       - 127.0.0.1:5000:5000
-    podman_container_volumes:
+    podman_simple_container_volumes:
       - name: changedetection_data
         mnt: /datastore
 - name: Include simple-reverse-proxy role

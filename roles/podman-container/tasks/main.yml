@@ -18,7 +18,7 @@
     path: "/home/{{ container_user }}/{{ item.name }}"
     state: directory
     mode: '0700'
-  loop: "{{ podman_container_volumes }}"
+  loop: "{{ podman_simple_container_volumes }}"
   loop_control:
     label: "{{ item.name }}"
     index_var: index
@@ -54,23 +54,21 @@
       notify: Reload systemd (daemon-reload)
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
-    - name: Define empty volume array
-      ansible.builtin.set_fact:
-        volumes: []
     - name: Map volumes to Podman accepted list
       ansible.builtin.set_fact:
-        volumes: "{{ volumes + ['/home/' + container_user + '/' + item.name + ':' + item.mnt] }}"
-      with_items: "{{ podman_container_volumes }}"
+        podman_container_volumes: "{{ podman_container_volumes + ['/home/' + container_user + '/' + item.name + ':' + item.mnt] }}"
+      with_items: "{{ podman_simple_container_volumes }}"
     - name: Start the container
       containers.podman.podman_container:
         name: "{{ podman_container_name }}"
         image: "{{ podman_container_image }}:{{ podman_container_tag }}"
         restart_policy: always
         user: root # Still isolated from host system 👍
+        command: "{{ podman_container_command }}"
         hostname: "{{ ansible_facts['hostname'] }}"
         publish: "{{ podman_container_publish }}"
         env: "{{ podman_container_env }}"
-        volumes: "{{ volumes }}"
+        volumes: "{{ podman_container_volumes }}"
         state: stopped
         # For more information on the systemd startup service, see: https://linuxhandbook.com/autostart-podman-containers/
         generate_systemd:

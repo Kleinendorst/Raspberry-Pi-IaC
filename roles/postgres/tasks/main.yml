@@ -1,0 +1,53 @@
+---
+- name: Include user role
+  ansible.builtin.include_role:
+    name: user
+  vars:
+    user_username: "{{ postgres_unix_username }}"
+    user_password: "{{ postgres_unix_password }}"
+- name: Install ensure_certificate_setup.sh
+  become: true
+  ansible.builtin.copy:
+    src: ensure_certificate_setup.sh
+    dest: "/root/.bin/"
+    mode: '0700'
+    owner: root
+- name: Create certificates for PostgreSQL (postgres.kleinendorst.info)
+  become: true
+  ansible.builtin.command:
+    cmd: >-
+      /snap/bin/certbot certonly
+        --dns-cloudflare
+        --dns-cloudflare-propagation-seconds 120
+        --dns-cloudflare-credentials '/root/.secrets/certbot/cloudflare.ini'
+        --deploy-hook '/root/.bin/ensure_certificate_setup.sh'
+        --agree-tos -m {{ administration_email }}
+        -d postgres.kleinendorst.info
+    creates: "/etc/letsencrypt/live/postgres.kleinendorst.info"
+- name: Create the postgres container
+  ansible.builtin.include_role:
+    name: podman-container
+    apply:
+      become: true
+      become_user: "{{ postgres_unix_username }}"
+  vars:
+    podman_container_name: postgres
+    podman_container_image: docker.io/postgres
+    podman_container_tag: "{{ postgres_version }}"
+    podman_container_publish:
+      - 0.0.0.0:5432:5432
+    podman_container_volumes:
+      - "/home/{{ postgres_unix_username }}/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
+      - "/home/{{ postgres_unix_username }}/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
+    podman_simple_container_volumes:
+      - name: postgres_data
+        mnt: /var/lib/postgresql/data
+    podman_container_command:
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/var/lib/postgresql/fullchain.pem
+      - -c
+      - ssl_key_file=/var/lib/postgresql/privkey.pem
+    podman_container_env:
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
