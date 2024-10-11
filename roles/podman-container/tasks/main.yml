@@ -54,6 +54,9 @@
       notify: Reload systemd (daemon-reload)
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
+    - name: Initialize container_volumes
+      ansible.builtin.set_fact:
+        container_volumes: "{{ podman_container_volumes }}"
     - name: Map volumes to Podman accepted list
       ansible.builtin.set_fact:
         container_volumes: "{{ container_volumes | default(podman_container_volumes) + ['/home/' + container_user + '/' + item.name + ':' + item.mnt] }}"
