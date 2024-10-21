@@ -13,6 +13,9 @@
 - name: Register current user in a variable
   ansible.builtin.set_fact:
     container_user: "{{ whoami.stdout }}"
+- name: Set default podman_simple_container_volumes if not provided
+  ansible.builtin.set_fact:
+    podman_simple_container_volumes: "{{ podman_simple_container_volumes | default([]) }}"
 - name: Create mount directories
   ansible.builtin.file:
     path: "/home/{{ container_user }}/{{ item.name }}"

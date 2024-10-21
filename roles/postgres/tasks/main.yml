@@ -51,3 +51,19 @@
       - ssl_key_file=/var/lib/postgresql/privkey.pem
     podman_container_env:
       POSTGRES_PASSWORD: "{{ postgres_password }}"
+- name: Create the postgres prometheus exporter container
+  ansible.builtin.include_role:
+    name: podman-container
+    apply:
+      become: true
+      become_user: "{{ postgres_unix_username }}"
+  vars:
+    podman_container_name: postgres-prometheus-exporter
+    podman_container_image: quay.io/prometheuscommunity/postgres-exporter
+    podman_container_tag: "{{ postgres_prometheus_exporter_version }}"
+    podman_container_publish:
+      - 0.0.0.0:9187:9187
+    podman_container_env:
+      DATA_SOURCE_URI: "postgres.kleinendorst.info:5432/postgres"
+      DATA_SOURCE_USER: "postgres"
+      DATA_SOURCE_PASS: "{{ postgres_password }}"
