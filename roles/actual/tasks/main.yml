@@ -13,6 +13,7 @@
     mounts:
       - source: actual_data
         target: /data
+    restart_policy: always
 - name: Include simple-reverse-proxy role
   ansible.builtin.include_role:
     name: simple-reverse-proxy
