@@ -61,6 +61,8 @@ For the next step remove the current *known_hosts* entry with: `ssh-keygen -R '1
 In the router settings the Raspberry Pi is configured as the primary DNS server. When reinstalling the Pi this breaks the network. When reinstalling the Pi revert to the default DNS provider in the
 router by navigating to [it's website](http://asusrouter.com/Advanced_DHCP_Content.asp) and clearing the DNS Server 1 field and applying these settings.
 
+Also make sure to alter the **inventory/hosts** file to allow Ansible to connect using the Raspberry Pi's IP address rather than it's hostname (which isn't reachable at this point).
+
 After installing the Raspberry Pi it can be added again.
 
 ### Debugging users other than the main user
