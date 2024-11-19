@@ -31,12 +31,12 @@ The Raspberry Pi should be installed and running with reachable SSH from the net
 2. When asked: **Would you like to apply OS customisation settings?** select **EDIT SETTINGS**. Select and fill in the following settings:
     1. **Set username and password**
     2. **Set locale settings**
-    3. **Enable SSH** > **Use password authentication** (we'll harden it later to use public keys).
+    3. **Enable SSH** > **Allow public-key authentication only** and enter your computer's public key.
     4. Disable **Eject media when finished** (probably not really important but I heard it could prevent problems on Windows).
 3. Start the Raspberry Pi with an ethernet cable attached.
 4. Find the assigned IP of the Raspberry Pi in the [router](http://asusrouter.com/) and configure DHCP to statically asign this address to the Raspberry Pi.
-5. Add the new Raspberry Pi to the *hosts* file using the internal IP.
-6. Test if the Raspberry Pi is correctly configured by opening an SSH session to it (using its IP address). If this works the next step is to [add SSH public keys for each computer that should provision/connect to the Raspberry Pi](https://linuxhandbook.com/add-ssh-public-key-to-server/). **It's important to perform this step before provisioning because that will disallow logging into SSH with  a password.**
+5. Add the new Raspberry Pi to the *hosts* file using the internal IP if it isn't there already.
+6. Test if the Raspberry Pi is correctly configured by opening an SSH session to it (using its IP address).
 
 ## Provisioning
 Provision the Raspberry Pi by running:

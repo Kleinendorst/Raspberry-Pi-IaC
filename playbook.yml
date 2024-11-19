@@ -11,22 +11,27 @@
     # Notice that this role changes some settings on reruns (on the "Change various sysctl-settings" task), doesn't seem problematic though.
     - role: devsec.hardening.ssh_hardening
       become: true
-    - role: hostname
-    - role: basic-intalls
-    - role: user
-    - role: cloudflare-ddns
-    - role: cloudflared
-    - role: nginx
-    - role: actual
-    - role: changedetection
-    - role: pi-hole
-    - role: monitoring
-    - role: postgres
-    - role: wedding
+    - role: geerlingguy.docker
+      become: true
+    # - role: hostname
+    # - role: basic-intalls
+    # - role: user
+    # - role: cloudflare-ddns
+    # - role: cloudflared
+    # - role: nginx
+    # - role: actual
+    # - role: changedetection
+    # - role: pi-hole
+    # - role: monitoring
+    # - role: postgres
+    # - role: wedding
   vars:
     # devsec.hardening.ssh_hardening vars:
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
     ssh_client_password_login: false # Default, but duplicated here for documentation purpose.
+    # geerlingguy.docker vars:
+    docker_edition: 'ce'
+    docker_install_compose_plugin: true
   tasks:
     # This task can be handy for debugging gathered facts, uncomment it if necessary:
     # - name: Store gathered facts in local file
