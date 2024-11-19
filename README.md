@@ -17,6 +17,11 @@ The files within this repository should be run on a computer with Ansible instal
     # Notice the space at the beginning, this prevents the shell from saving this command in its history.
      echo '[ -- enter vault pass here -- ]' > .vault_pass
     ```
+4. Install the Python3 passlib library (used internally in the user role);
+
+    ```bash
+    sudo apt install python3-passlib
+    ```
 
 ### Environment prerequisites
 The Raspberry Pi IaC code contained within this repository provisions the Raspberry Pi itself but doesn't provision all surrounding infrastructure which is presumed to be managed by hand. The following relevant configuration is assumed:
