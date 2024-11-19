@@ -2,7 +2,10 @@
 collections:
   # See: https://galaxy.ansible.com/ui/repo/published/devsec/hardening/
   - name: devsec.hardening
-    version: 9.0.1
+    version: 10.1.0
   # See: https://prometheus-community.github.io/ansible/branch/main/prometheus_role.html#ansible-collections-prometheus-prometheus-prometheus-role
   - name: prometheus.prometheus
-    version: 0.17.1
+    version: 0.23.0
+roles:
+  - name: geerlingguy.docker
+    version: 7.4.1
