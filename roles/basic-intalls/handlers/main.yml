@@ -1,6 +1,0 @@
----
-- name: Restart ufw
-  become: true
-  ansible.builtin.systemd:
-    name: ufw.service
-    state: restarted

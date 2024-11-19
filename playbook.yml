@@ -13,9 +13,9 @@
       become: true
     - role: geerlingguy.docker
       become: true
-    # - role: hostname
-    # - role: basic-intalls
-    # - role: user
+    - role: hostname
+    - role: packages
+    - role: user
     # - role: cloudflare-ddns
     # - role: cloudflared
     # - role: nginx
