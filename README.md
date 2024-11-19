@@ -57,6 +57,12 @@ When logged in the user will be prompted with the **zsh** configured with **[Oh 
 It can be handy to reinstall the Pi. First shutdown the pi by running `sudo shutdown` from SSH. Next take out the memory card and follow all steps in [Raspberry Pi preperation](#raspberry-pi-preperation).
 For the next step remove the current *known_hosts* entry with: `ssh-keygen -R '192.168.50.27'` for all PCs that had SSH access to the Pi.
 
+#### Removing Raspberry Pi as DNS provider for local network
+In the router settings the Raspberry Pi is configured as the primary DNS server. When reinstalling the Pi this breaks the network. When reinstalling the Pi revert to the default DNS provider in the
+router by navigating to [it's website](http://asusrouter.com/Advanced_DHCP_Content.asp) and clearing the DNS Server 1 field and applying these settings.
+
+After installing the Raspberry Pi it can be added again.
+
 ### Debugging users other than the main user
 The **user** role included in this repository makes it possible to create new users which will also have a fully configured
 ZSH environment. They can't be accessed via SSH because no SSH keys are added for them and password logins are disabled.
