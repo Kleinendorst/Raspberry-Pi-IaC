@@ -16,9 +16,9 @@
     - role: hostname
     - role: packages
     - role: user
-    # - role: cloudflare-ddns
-    # - role: cloudflared
-    # - role: nginx
+    - role: cloudflare-ddns
+    - role: cloudflared
+    - role: nginx
     # - role: actual
     # - role: changedetection
     # - role: pi-hole
