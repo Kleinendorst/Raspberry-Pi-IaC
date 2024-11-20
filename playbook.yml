@@ -21,7 +21,7 @@
     - role: nginx
     - role: pi-hole
     - role: actual
-    # - role: postgres
+    - role: postgres
     # - role: wedding
     # - role: changedetection
     # - role: monitoring

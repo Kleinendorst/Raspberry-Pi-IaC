@@ -1,0 +1,30 @@
+---
+services:
+  postgres:
+    image: docker.io/postgres:{{ postgres_version }}
+    ports:
+      - "0.0.0.0:5432:5432"
+    restart: always
+    volumes:
+      - "/home/{{ postgres_unix_username }}/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
+      - "/home/{{ postgres_unix_username }}/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
+      - "postgres_data:/var/lib/postgresql/data"
+    command:
+      - -c
+      - ssl=on
+      - -c
+      - ssl_cert_file=/var/lib/postgresql/fullchain.pem
+      - -c
+      - ssl_key_file=/var/lib/postgresql/privkey.pem
+    environment:
+      POSTGRES_PASSWORD: "{{ postgres_password }}"
+  postgres-prometheus-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:{{ postgres_prometheus_exporter_version }}
+    ports:
+      - "0.0.0.0:9187:9187"
+    environment:
+      DATA_SOURCE_URI: "postgres.kleinendorst.info:5432/postgres"
+      DATA_SOURCE_USER: "postgres"
+      DATA_SOURCE_PASS: "{{ postgres_password }}"
+volumes:
+  postgres_data:
