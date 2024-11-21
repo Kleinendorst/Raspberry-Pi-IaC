@@ -1,2 +1,6 @@
 ---
 changedetection_version: 0.47.06
+# This isn't preferable, i'd rather pin a version. However
+# it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
+# for arm64.
+browserless_chrome_version: latest

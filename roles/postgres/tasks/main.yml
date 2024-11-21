@@ -26,6 +26,8 @@
         --agree-tos -m {{ administration_email }}
         -d postgres.kleinendorst.info
     creates: "/etc/letsencrypt/live/postgres.kleinendorst.info"
+# TODO: Instead of creating a seperate postgres user specifically for storing
+#       the files we might also upload the compose to the default account and run from there.
 - name: Create the compose project directory
   become: true
   become_user: "{{ postgres_unix_username }}"
@@ -38,12 +40,11 @@
   become: true
   become_user: "{{ postgres_unix_username }}"
   ansible.builtin.template:
-    src: docker-compose.yml.j2
-    dest: "/home/{{ postgres_unix_username }}/postgres/docker-compose.yml"
+    src: docker-compose.yaml.j2
+    dest: "/home/{{ postgres_unix_username }}/postgres/docker-compose.yaml"
     owner: "{{ postgres_unix_username }}"
     mode: '0644'
 - name: Create and start services
   become: true
   community.docker.docker_compose_v2:
     project_src: "/home/{{ postgres_unix_username }}/postgres/"
-  register: docker_compose_output

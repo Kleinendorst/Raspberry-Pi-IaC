@@ -1,19 +1,20 @@
 ---
-- name: Create a volume
+- name: Create the compose project directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/changedetection"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0744'
+- name: Create the compose project
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: "/home/{{ ansible_user_id }}/changedetection/docker-compose.yaml"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create and start services
   become: true
-  community.docker.docker_volume:
-    name: changedetection_data
-- name: Install the container
-  become: true
-  community.docker.docker_container:
-    name: changedetection-server
-    image: "docker.io/dgtlmoon/changedetection.io:{{ changedetection_version }}"
-    ports:
-      - "127.0.0.1:5000:5000/tcp"
-    mounts:
-      - source: changedetection_data
-        target: /datastore
-    restart_policy: always
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user_id }}/changedetection/"
 - name: Include simple-reverse-proxy role
   ansible.builtin.include_role:
     name: simple-reverse-proxy
