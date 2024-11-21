@@ -22,8 +22,8 @@
     - role: pi-hole
     - role: actual
     - role: postgres
-    # - role: wedding
-    # - role: changedetection
+    - role: wedding
+    - role: changedetection
     # - role: monitoring
   vars:
     # devsec.hardening.ssh_hardening vars:
