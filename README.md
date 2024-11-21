@@ -17,6 +17,11 @@ The files within this repository should be run on a computer with Ansible instal
     # Notice the space at the beginning, this prevents the shell from saving this command in its history.
      echo '[ -- enter vault pass here -- ]' > .vault_pass
     ```
+4. Install the Python3 passlib library (used internally in the user role);
+
+    ```bash
+    sudo apt install python3-passlib
+    ```
 
 ### Environment prerequisites
 The Raspberry Pi IaC code contained within this repository provisions the Raspberry Pi itself but doesn't provision all surrounding infrastructure which is presumed to be managed by hand. The following relevant configuration is assumed:
@@ -31,12 +36,12 @@ The Raspberry Pi should be installed and running with reachable SSH from the net
 2. When asked: **Would you like to apply OS customisation settings?** select **EDIT SETTINGS**. Select and fill in the following settings:
     1. **Set username and password**
     2. **Set locale settings**
-    3. **Enable SSH** > **Use password authentication** (we'll harden it later to use public keys).
+    3. **Enable SSH** > **Allow public-key authentication only** and enter your computer's public key.
     4. Disable **Eject media when finished** (probably not really important but I heard it could prevent problems on Windows).
 3. Start the Raspberry Pi with an ethernet cable attached.
 4. Find the assigned IP of the Raspberry Pi in the [router](http://asusrouter.com/) and configure DHCP to statically asign this address to the Raspberry Pi.
-5. Add the new Raspberry Pi to the *hosts* file using the internal IP.
-6. Test if the Raspberry Pi is correctly configured by opening an SSH session to it (using its IP address). If this works the next step is to [add SSH public keys for each computer that should provision/connect to the Raspberry Pi](https://linuxhandbook.com/add-ssh-public-key-to-server/). **It's important to perform this step before provisioning because that will disallow logging into SSH with  a password.**
+5. Add the new Raspberry Pi to the *hosts* file using the internal IP if it isn't there already.
+6. Test if the Raspberry Pi is correctly configured by opening an SSH session to it (using its IP address).
 
 ## Provisioning
 Provision the Raspberry Pi by running:
@@ -60,6 +65,8 @@ For the next step remove the current *known_hosts* entry with: `ssh-keygen -R '1
 #### Removing Raspberry Pi as DNS provider for local network
 In the router settings the Raspberry Pi is configured as the primary DNS server. When reinstalling the Pi this breaks the network. When reinstalling the Pi revert to the default DNS provider in the
 router by navigating to [it's website](http://asusrouter.com/Advanced_DHCP_Content.asp) and clearing the DNS Server 1 field and applying these settings.
+
+Also make sure to alter the **inventory/hosts** file to allow Ansible to connect using the Raspberry Pi's IP address rather than it's hostname (which isn't reachable at this point).
 
 After installing the Raspberry Pi it can be added again.
 

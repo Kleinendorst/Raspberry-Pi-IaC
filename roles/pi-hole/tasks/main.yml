@@ -1,93 +1,37 @@
 ---
-- name: Create a user for running the pi-hole podman container
-  ansible.builtin.include_role:
-    name: user
-  vars:
-    user_username: "{{ pi_hole_username }}"
-    user_password: "{{ pi_hole_password }}"
-- name: Create the pi-hole container
-  ansible.builtin.include_role:
-    name: podman-container
-    apply:
-      become: true
-      become_user: "{{ pi_hole_username }}"
-  vars:
-    podman_container_name: pi-hole
-    podman_container_image: docker.io/pihole/pihole
-    podman_container_tag: "{{ pi_hole_version }}"
-    podman_container_publish:
-      - 127.0.0.1:5053:53/tcp
-      - 127.0.0.1:5053:53/udp
-      - 127.0.0.1:8080:80
-    podman_simple_container_volumes:
-      - name: etc-pihole
-        mnt: /etc/pihole
-      - name: etc-dnsmasq.d
-        mnt: /etc/dnsmasq.d
-    podman_container_env:
+- name: Create a volume for DNS data
+  become: true
+  community.docker.docker_volume:
+    name: pihole_data
+- name: Create a volume for Dnsmasq data
+  become: true
+  community.docker.docker_volume:
+    name: dnsmasq_data
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: pi-hole
+    image: "docker.io/pihole/pihole:{{ pi_hole_version }}"
+    mounts:
+      - source: pihole_data
+        target: /etc/pihole
+      - source: dnsmasq_data
+        target: /etc/dnsmasq.d
+    network_mode: host
+    restart_policy: always
+    env:
       TZ: 'Europe/Amsterdam'
       WEBPASSWORD: "{{ pi_hole_web_password }}"
       # VIRTUAL_HOST: 'pi-hole.kleinendorst.info'
       # FTLCONF_LOCAL_IPV4: "{{ ansible_facts['default_ipv4']['address'] }}"
       PIHOLE_DNS_: 1.1.1.1;1.0.0.1
       DNSMASQ_USER: root
-      INTERFACE: tap0
-- name: Install certificate for pi-hole.kleinendorst.info
-  become: true
-  ansible.builtin.command:
-    cmd: register_certbot_domain.sh pi-hole.kleinendorst.info
-    creates: /etc/letsencrypt/live/pi-hole.kleinendorst.info # The certificate directory
-- name: Set Nginx configuration
-  become: true
-  ansible.builtin.template:
-    src: pi-hole.conf.j2
-    dest: /etc/nginx/conf.d/pi-hole.conf
-    mode: '0644'
-  notify: Restart Nginx
-- name: Debug
-  ansible.builtin.debug:
-    msg: "Don't forget to manually add a DNS record for pi-hole.kleinendorst.info pointing to: {{ ansible_facts['default_ipv4']['address'] }}."
-- name: Setup udp port forwarding (53 > 5053) in nginx
-  become: true
-  ansible.builtin.blockinfile:
-    path: /etc/nginx/nginx.conf
-    insertbefore: '^http \{$'
-    block: |
-      stream {
-        server {
-          listen 53;
-          proxy_pass 127.0.0.1:5053;
-        }
-
-        server {
-            listen 53 udp;
-            proxy_pass 127.0.0.1:5053;
-        }
-      }
-  notify: Restart Nginx
-# - name: Add forwarding rules for ufw
-#   become: true
-#   ansible.builtin.blockinfile:
-#     path: /etc/ufw/before.rules
-#     insertbefore: "^\\*filter$"
-#     block: |
-#       *nat
-#       :PREROUTING ACCEPT [0:0]
-#       -A PREROUTING -p tcp -i eth0 --dport 53 -j DNAT \ --to-destination 127.0.0.1:5053
-#       -A PREROUTING -p udp -i eth0 --dport 53 -j DNAT \ --to-destination 127.0.0.1:5053
-#       COMMIT
-#   notify: Restart ufw
-# - name: Allow all access to port 53 (udp)
-#   become: true
-#   community.general.ufw:
-#     rule: allow
-#     port: '53'
-#     proto: udp
-#   notify: Restart ufw
-# - name: Allow all access to port 53 (tcp)
-#   become: true
-#   community.general.ufw:
-#     rule: allow
-#     port: '53'
-#     proto: tcp
-#   notify: Restart ufw
+      DNSMASQ_LISTENING: all
+      WEB_PORT: '8080'
+- name: Include simple-reverse-proxy role
+  ansible.builtin.include_role:
+    name: simple-reverse-proxy
+  vars:
+    simple_reverse_proxy_internal_port: 8080
+    simple_reverse_proxy_internal_subdomain: pi-hole
+    simple_reverse_proxy_redirect_to: /admin

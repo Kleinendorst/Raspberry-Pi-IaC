@@ -1,25 +1,19 @@
 ---
-- name: Include user role
-  ansible.builtin.include_role:
-    name: user
-  vars:
-    user_username: "{{ actual_username }}"
-    user_password: "{{ actual_password }}"
-- name: Create the actual container
-  ansible.builtin.include_role:
-    name: podman-container
-    apply:
-      become: true
-      become_user: "{{ actual_username }}"
-  vars:
-    podman_container_name: actual-server
-    podman_container_image: docker.io/actualbudget/actual-server
-    podman_container_tag: "{{ actual_version }}"
-    podman_container_publish:
-      - 127.0.0.1:5006:5006
-    podman_simple_container_volumes:
-      - name: actual_data
-        mnt: /data
+- name: Create a volume
+  become: true
+  community.docker.docker_volume:
+    name: actual_data
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: actual-server
+    image: "docker.io/actualbudget/actual-server:{{ actual_version }}"
+    ports:
+      - "127.0.0.1:5006:5006/tcp"
+    mounts:
+      - source: actual_data
+        target: /data
+    restart_policy: always
 - name: Include simple-reverse-proxy role
   ansible.builtin.include_role:
     name: simple-reverse-proxy

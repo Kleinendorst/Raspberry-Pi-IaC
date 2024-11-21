@@ -5,6 +5,7 @@
   vars:
     user_username: "{{ postgres_unix_username }}"
     user_password: "{{ postgres_unix_password }}"
+    user_add_to_docker_group: true
 - name: Install ensure_certificate_setup.sh
   become: true
   ansible.builtin.copy:
@@ -12,6 +13,7 @@
     dest: "/root/.bin/"
     mode: '0700'
     owner: root
+# Output of the hook can be found as part of the logs at: /var/log/letsencrypt/letsencrypt.log
 - name: Create certificates for PostgreSQL (postgres.kleinendorst.info)
   become: true
   ansible.builtin.command:
@@ -24,46 +26,24 @@
         --agree-tos -m {{ administration_email }}
         -d postgres.kleinendorst.info
     creates: "/etc/letsencrypt/live/postgres.kleinendorst.info"
-- name: Create the postgres container
-  ansible.builtin.include_role:
-    name: podman-container
-    apply:
-      become: true
-      become_user: "{{ postgres_unix_username }}"
-  vars:
-    podman_container_name: postgres
-    podman_container_image: docker.io/postgres
-    podman_container_tag: "{{ postgres_version }}"
-    podman_container_publish:
-      - 0.0.0.0:5432:5432
-    podman_container_volumes:
-      - "/home/{{ postgres_unix_username }}/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
-      - "/home/{{ postgres_unix_username }}/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
-    podman_simple_container_volumes:
-      - name: postgres_data
-        mnt: /var/lib/postgresql/data
-    podman_container_command:
-      - -c
-      - ssl=on
-      - -c
-      - ssl_cert_file=/var/lib/postgresql/fullchain.pem
-      - -c
-      - ssl_key_file=/var/lib/postgresql/privkey.pem
-    podman_container_env:
-      POSTGRES_PASSWORD: "{{ postgres_password }}"
-- name: Create the postgres prometheus exporter container
-  ansible.builtin.include_role:
-    name: podman-container
-    apply:
-      become: true
-      become_user: "{{ postgres_unix_username }}"
-  vars:
-    podman_container_name: postgres-prometheus-exporter
-    podman_container_image: quay.io/prometheuscommunity/postgres-exporter
-    podman_container_tag: "{{ postgres_prometheus_exporter_version }}"
-    podman_container_publish:
-      - 0.0.0.0:9187:9187
-    podman_container_env:
-      DATA_SOURCE_URI: "postgres.kleinendorst.info:5432/postgres"
-      DATA_SOURCE_USER: "postgres"
-      DATA_SOURCE_PASS: "{{ postgres_password }}"
+- name: Create the compose project directory
+  become: true
+  become_user: "{{ postgres_unix_username }}"
+  ansible.builtin.file:
+    path: "/home/{{ postgres_unix_username }}/postgres"
+    state: directory
+    owner: "{{ postgres_unix_username }}"
+    mode: '0744'
+- name: Create the compose project
+  become: true
+  become_user: "{{ postgres_unix_username }}"
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "/home/{{ postgres_unix_username }}/postgres/docker-compose.yml"
+    owner: "{{ postgres_unix_username }}"
+    mode: '0644'
+- name: Create and start services
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ postgres_unix_username }}/postgres/"
+  register: docker_compose_output

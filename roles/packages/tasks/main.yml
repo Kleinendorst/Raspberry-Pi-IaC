@@ -1,0 +1,16 @@
+---
+- name: Install basic packages
+  become: true
+  ansible.builtin.apt:
+    pkg:
+      - git
+      - vim
+      - dnsutils
+      - rsyslog
+      - snapd
+    state: present
+- name: Install Snap Core
+  become: true
+  community.general.snap:
+    name: core
+    state: present
