@@ -21,30 +21,24 @@
     simple_reverse_proxy_internal_port: 9093
     simple_reverse_proxy_internal_subdomain: alertmanager
 # region: Install Grafana
-- name: Include user role
-  ansible.builtin.include_role:
-    name: user
-  vars:
-    user_username: "{{ grafana_username }}"
-    user_password: "{{ grafana_password }}"
-- name: Create the grafana container
-  ansible.builtin.include_role:
-    name: podman-container
-    apply:
-      become: true
-      become_user: "{{ grafana_username }}"
-  vars:
-    podman_container_name: grafana-server
-    podman_container_image: docker.io/grafana/grafana
-    podman_container_tag: "{{ grafana_version }}"
-    podman_container_env:
-      GF_INSTALL_PLUGINS: "grafana-clock-panel 2.1.7"
-    podman_container_publish:
-      - 127.0.0.1:3000:3000
-    podman_simple_container_volumes:
-      - name: grafana_storage
-        mnt: /var/lib/grafana
-- name: Include simple-reverse-proxy role - Grafana
+- name: Create a volume
+  become: true
+  community.docker.docker_volume:
+    name: grafana_data
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: grafana-server
+    image: "docker.io/grafana/grafana:{{ grafana_version }}"
+    ports:
+      - "127.0.0.1:3000:3000/tcp"
+    mounts:
+      - source: grafana_data
+        target: /var/lib/grafana
+    env:
+      GF_INSTALL_PLUGINS: "grafana-clock-panel 2.1.8"
+    restart_policy: always
+- name: Include simple-reverse-proxy role
   ansible.builtin.include_role:
     name: simple-reverse-proxy
   vars:
