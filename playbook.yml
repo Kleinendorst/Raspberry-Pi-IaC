@@ -23,6 +23,7 @@
     - role: actual
     - role: postgres
     - role: wedding
+    - role: trilium
     - role: changedetection
     - role: monitoring
   vars:
