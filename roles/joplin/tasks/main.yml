@@ -1,0 +1,19 @@
+---
+# Database setup needs to happen manually for now
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: joplin-server
+    image: "etechonomy/joplin-server:{{ joplin_version }}"
+    ports:
+      - "127.0.0.1:4638:22300/tcp"
+    env:
+      APP_BASE_URL: "https://joplin.kleinendorst.info"
+      APP_PORT: "22300"
+      DB_CLIENT: "pg"
+      POSTGRES_DATABASE: "joplin"
+      POSTGRES_USER: "joplin"
+      POSTGRES_PASSWORD: "{{ joplin_database_password }}"
+      POSTGRES_PORT: "5432"
+      POSTGRES_HOST: "postgres.kleinendorst.info"
+    restart_policy: always

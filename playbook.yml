@@ -24,6 +24,7 @@
     - role: postgres
     - role: wedding
     - role: trilium
+    - role: joplin
     - role: changedetection
     - role: monitoring
   vars:
