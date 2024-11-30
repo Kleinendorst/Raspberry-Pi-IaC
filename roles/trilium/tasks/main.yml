@@ -1,0 +1,16 @@
+---
+- name: Create a volume
+  become: true
+  community.docker.docker_volume:
+    name: trilium_data
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: trilium-server
+    image: "triliumnext/notes:{{ trilium_version }}"
+    ports:
+      - "127.0.0.1:4637:8080/tcp"
+    mounts:
+      - source: trilium_data
+        target: /home/node/trilium-data
+    restart_policy: always
