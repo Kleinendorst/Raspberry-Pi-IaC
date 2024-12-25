@@ -19,7 +19,6 @@
     - role: cloudflare-ddns
     - role: cloudflared
     - role: nginx
-    - role: pi-hole
     - role: actual
     - role: postgres
     - role: wedding
