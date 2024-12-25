@@ -11,8 +11,10 @@
     dest: "/etc/nginx/conf.d/{{ simple_reverse_proxy_internal_subdomain }}.conf"
     mode: '0644'
   notify: Restart Nginx
-- name: Debug
-  ansible.builtin.debug:
-    msg: >-
-      Don't forget to manually add a DNS record for {{ simple_reverse_proxy_internal_subdomain }}.kleinendorst.info
-      pointing to: {{ ansible_facts['default_ipv4']['address'] }}.
+- name: Add DNS record in Cloudflare
+  community.general.cloudflare_dns:
+    domain: kleinendorst.info
+    record: "{{ simple_reverse_proxy_internal_subdomain }}"
+    type: A
+    value: "{{ ansible_facts['default_ipv4']['address'] }}"
+    api_token: "{{ dns_cloudflare_token }}"
