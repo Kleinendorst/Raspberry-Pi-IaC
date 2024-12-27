@@ -1,4 +1,0 @@
----
-podman_container_env: {}
-podman_container_volumes: []
-podman_container_command: []
