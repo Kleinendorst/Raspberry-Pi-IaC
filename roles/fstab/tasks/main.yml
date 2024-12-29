@@ -1,0 +1,15 @@
+---
+- name: Mount the external disk automatically
+  become: true
+  ansible.posix.mount:
+    path: /bulk
+    src: "PARTUUID={{ disk_part_uuid }}"
+    fstype: ext4
+    opts: defaults
+    state: mounted
+- name: Grant permissions to created /bulk volume
+  become: true
+  ansible.builtin.file:
+    path: /bulk
+    state: directory
+    mode: '0777'
