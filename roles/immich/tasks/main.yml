@@ -1,0 +1,22 @@
+---
+- name: Create the compose project directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/immich"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0744'
+- name: Download the Immich Dockerfile
+  ansible.builtin.get_url:
+    url: https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
+    dest: "/home/{{ ansible_user_id }}/immich/docker-compose.yml"
+    mode: '0755'
+- name: Create the .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "/home/{{ ansible_user_id }}/immich/.env"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create and start services
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user_id }}/immich/"
