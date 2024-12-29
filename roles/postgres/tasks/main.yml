@@ -48,3 +48,10 @@
   become: true
   community.docker.docker_compose_v2:
     project_src: "/home/{{ postgres_unix_username }}/postgres/"
+- name: Add DNS record in Cloudflare
+  community.general.cloudflare_dns:
+    domain: kleinendorst.info
+    record: postgres
+    type: A
+    value: "{{ ansible_facts['default_ipv4']['address'] }}"
+    api_token: "{{ dns_cloudflare_token }}"
