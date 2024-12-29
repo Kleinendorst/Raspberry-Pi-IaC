@@ -20,3 +20,16 @@
   become: true
   community.docker.docker_compose_v2:
     project_src: "/home/{{ ansible_user_id }}/immich/"
+# Public access is provided by using a CloudFlare zero trust tunnel.
+# I however found out that the free tier has a maximum file size upload of 100 Mb which
+# can be too small for some videos that might be uploaded.
+# So in addition to the Cloudflare tunnel I also expose the service via
+# Locally on the network (with a 5 GiB upload size limit):
+# local.immich.kleinendorst.info
+# This can actually be configured to be used on the WiFi network in the app.
+- name: Include simple-reverse-proxy role
+  ansible.builtin.include_role:
+    name: simple-reverse-proxy
+  vars:
+    simple_reverse_proxy_internal_port: 2283
+    simple_reverse_proxy_internal_subdomain: local.immich
