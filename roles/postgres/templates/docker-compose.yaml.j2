@@ -1,7 +1,7 @@
 ---
 services:
   postgres:
-    image: docker.io/postgres:{{ postgres_version }}
+    image: docker.io/postgres:{{ versions.postgres.self }}
     ports:
       - "0.0.0.0:5432:5432"
     restart: always
@@ -19,7 +19,7 @@ services:
     environment:
       POSTGRES_PASSWORD: "{{ postgres_password }}"
   postgres-prometheus-exporter:
-    image: quay.io/prometheuscommunity/postgres-exporter:{{ postgres_prometheus_exporter_version }}
+    image: quay.io/prometheuscommunity/postgres-exporter:{{ versions.postgres.prometheus_exporter }}
     ports:
       - "0.0.0.0:9187:9187"
     environment:

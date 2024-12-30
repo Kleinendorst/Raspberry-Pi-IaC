@@ -1,6 +1,5 @@
 ---
 # Prometheus
-prometheus_version: "2.54.1"
 prometheus_targets:
   prometheus:
     - targets:
@@ -37,14 +36,12 @@ prometheus_alertmanager_config:
       - targets:
           - raspberry-pi-1.kleinendorst.info:9093
 # Node exporter
-node_exporter_version: "1.8.2"
 node_exporter_enabled_collectors:
   - systemd
   - {"textfile": {"directory": "{{ node_exporter_textfile_dir }}"}}
   - processes
 node_exporter_web_listen_address: 127.0.0.1:9100
 # Alertmanager
-alertmanager_version: "0.27.0"
 alertmanager_web_listen_address: 127.0.0.1:9093
 # Telegram configuration inspired by this source:
 # https://www.stranatesta.eu/tech/how-to-configure-prometheus-alertmanager-to-send-alerts-to-telegram/#configure-alertmanager
@@ -58,5 +55,4 @@ alertmanager_receivers:
 alertmanager_route:
   receiver: telegram
 # Grafana
-grafana_version: "11.2.0"
 grafana_username: grafana

@@ -1,7 +1,7 @@
 ---
 services:
   changedetection-server:
-    image: "docker.io/dgtlmoon/changedetection.io:{{ changedetection_version }}"
+    image: "docker.io/dgtlmoon/changedetection.io:{{ versions.changedetection.self }}"
     hostname: changedetection
     restart: always
     ports:
@@ -12,7 +12,7 @@ services:
       - PLAYWRIGHT_DRIVER_URL=ws://browserless-chrome:3000
   # See configuration from: https://www.youtube.com/watch?v=o_iG4Wunh98
   browserless-chrome:
-    image: "browserless/chrome:{{ browserless_chrome_version }}"
+    image: "browserless/chrome:{{ versions.changedetection.headless_chrome }}"
     hostname: browserless-chrome
     restart: always
     environment:

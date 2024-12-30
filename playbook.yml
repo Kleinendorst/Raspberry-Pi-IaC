@@ -6,6 +6,7 @@
   hosts: raspberry_pis
   vars_files:
     - vault.yml
+    - versions.yml
   roles:
     # These roles are disabled after they have being applied once for performance reasons, it should be safe to enable them again.
     # Notice that this role changes some settings on reruns (on the "Change various sysctl-settings" task), doesn't seem problematic though.

@@ -7,7 +7,7 @@
   become: true
   community.docker.docker_container:
     name: actual-server
-    image: "docker.io/actualbudget/actual-server:{{ actual_version }}"
+    image: "docker.io/actualbudget/actual-server:{{ versions.actual }}"
     ports:
       - "127.0.0.1:5006:5006/tcp"
     mounts:

@@ -1,4 +1,2 @@
 ---
 postgres_unix_username: postgres
-postgres_version: 17-alpine
-postgres_prometheus_exporter_version: v0.15.0

@@ -1,4 +1,3 @@
 ---
-immich_version: v1.123.0
 immich_upload_location: '/bulk/immich_uploads'
 immich_database_location: '/bulk/immich_database'

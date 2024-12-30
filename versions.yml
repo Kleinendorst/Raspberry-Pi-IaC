@@ -1,0 +1,31 @@
+---
+versions:
+  # Changelog: https://actualbudget.org/docs/releases/
+  actual: 24.12.0
+  changedetection:
+    # Changelog: https://changedetection.io/CHANGELOG.txt
+    self: 0.48.05
+    # ⬇️ This isn't preferable, i'd rather pin a version. However
+    # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
+    # for arm64.
+    headless_chrome: latest
+  # Changelog: https://github.com/immich-app/immich/discussions/8930
+  immich: v1.123.0
+  monitoring:
+    # Changelog: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
+    # Note that version 3.0.0 was just released, upgrading is probably necessary.
+    prometheus: 2.55.1
+    # Changelog: https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md
+    node_exporter: 1.8.2
+    # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
+    alertmanager: 0.27.0
+    # Changelog: https://github.com/grafana/grafana/blob/main/CHANGELOG.md
+    grafana: 11.4.0
+  postgres:
+    # Docker version: https://hub.docker.com/_/postgres
+    self: 17.2-alpine
+    # Releases: https://github.com/prometheus-community/postgres_exporter/releases
+    prometheus_exporter: v0.16.0
+  # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
+  wedding: 0.0.17
+  cloudflared: 2024.12.2
