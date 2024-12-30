@@ -22,6 +22,8 @@ services:
     image: quay.io/prometheuscommunity/postgres-exporter:{{ versions.postgres.prometheus_exporter }}
     ports:
       - "0.0.0.0:9187:9187"
+    # See: https://github.com/prometheus-community/postgres_exporter/issues/1060#issuecomment-2420235829
+    command: "--no-collector.stat_bgwriter"
     environment:
       DATA_SOURCE_URI: "postgres.kleinendorst.info:5432/postgres"
       DATA_SOURCE_USER: "postgres"
