@@ -14,7 +14,7 @@ versions:
   monitoring:
     # Changelog: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
     # Note that version 3.0.0 was just released, upgrading is probably necessary.
-    prometheus: 2.55.1
+    prometheus: 3.0.1
     # Changelog: https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md
     node_exporter: 1.8.2
     # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
