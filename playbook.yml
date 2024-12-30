@@ -31,6 +31,7 @@
     # devsec.hardening.ssh_hardening vars:
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
     ssh_client_password_login: false # Default, but duplicated here for documentation purpose.
+    ssh_allow_tcp_forwarding: true
     # geerlingguy.docker vars:
     docker_edition: 'ce'
     docker_install_compose_plugin: true
