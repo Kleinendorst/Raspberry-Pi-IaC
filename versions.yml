@@ -29,3 +29,5 @@ versions:
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
   wedding: 0.0.17
   cloudflared: 2024.12.2
+  # Releases: https://github.com/hoarder-app/hoarder/releases
+  hoarder_version: 0.20.0
