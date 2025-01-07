@@ -31,3 +31,4 @@ versions:
   cloudflared: 2024.12.2
   # Releases: https://github.com/hoarder-app/hoarder/releases
   hoarder_version: 0.20.0
+  portainer: 2.21.5
