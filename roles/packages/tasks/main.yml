@@ -8,6 +8,8 @@
       - dnsutils
       - rsyslog
       - snapd
+      - yq
+      - borgbackup
     state: present
 - name: Install Snap Core
   become: true
