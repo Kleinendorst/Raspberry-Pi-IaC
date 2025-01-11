@@ -8,6 +8,7 @@
   community.docker.docker_container:
     name: portainer
     image: "portainer/portainer-ce:{{ versions.portainer }}"
+    image_name_mismatch: recreate
     ports:
       # - "127.0.0.1:9443:9443/tcp" # TCP port, not used
       # But the opened http port is only opened for "legacy reasons", see: https://docs.portainer.io/start/install-ce/server/docker/linux

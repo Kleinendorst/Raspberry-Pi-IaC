@@ -30,6 +30,7 @@
   community.docker.docker_container:
     name: grafana-server
     image: "docker.io/grafana/grafana:{{ versions.monitoring.grafana }}"
+    image_name_mismatch: recreate
     ports:
       - "127.0.0.1:3000:3000/tcp"
     mounts:

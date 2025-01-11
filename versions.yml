@@ -1,16 +1,16 @@
 ---
 versions:
   # Changelog: https://actualbudget.org/docs/releases/
-  actual: 24.12.0
+  actual: 25.1.0
   changedetection:
     # Changelog: https://changedetection.io/CHANGELOG.txt
-    self: 0.48.05
+    self: 0.48.06
     # ⬇️ This isn't preferable, i'd rather pin a version. However
     # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
     # for arm64.
     headless_chrome: latest
-  # Changelog: https://github.com/immich-app/immich/discussions/8930
-  immich: v1.123.0
+  # Changelog: https://github.com/immich-app/immich/releases
+  immich: v1.124.2
   monitoring:
     # Changelog: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
     # Note that version 3.0.0 was just released, upgrading is probably necessary.
@@ -28,7 +28,9 @@ versions:
     prometheus_exporter: v0.16.0
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
   wedding: 0.0.17
-  cloudflared: 2024.12.2
+  # Releases: https://github.com/cloudflare/cloudflared/releases
+  cloudflared: 2025.1.0
   # Releases: https://github.com/hoarder-app/hoarder/releases
-  hoarder_version: 0.20.0
-  portainer: 2.21.5
+  hoarder_version: 0.21.0
+  # Releases: https://github.com/portainer/portainer/releases
+  portainer: 2.25.1
