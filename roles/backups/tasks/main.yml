@@ -1,0 +1,60 @@
+---
+# From within the script we're pushing backups to a specialised service (BorgBackup), This step ensure that an SSH key is present to use
+# for verification on that service. Currently it has to be manually read out and entered in the service. This step has to be repeated
+# when freshly applying this setup.
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+  become: true
+  community.crypto.openssh_keypair:
+    path: "{{ backup_script_ssh_key_location }}"
+# Needed for the task after this apparently...
+- name: Install SSH config file
+  become: true
+  ansible.builtin.template:
+    src: ssh_config
+    dest: /root/.ssh/config
+    owner: root
+    group: root
+    mode: '0700'
+- name: Copy over script
+  become: true
+  ansible.builtin.copy:
+    src: backup_script.sh
+    dest: "{{ backups_script_path }}"
+    owner: root
+    group: root
+    mode: '0700'
+- name: Ensure directory for configuration file exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ backups_configuration_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+- name: Copy over configuration
+  become: true
+  ansible.builtin.template:
+    src: backup_configuration.yaml
+    dest: "{{ backups_configuration_path }}"
+    owner: root
+    group: root
+    mode: '0400'
+- name: Install BorgBase backup service file
+  become: true
+  ansible.builtin.template:
+    src: borg_backup.service.j2
+    dest: "/lib/systemd/system/borg_backup.service"
+    mode: '0644'
+- name: Install BorgBase backup timer file
+  become: true
+  ansible.builtin.copy:
+    src: borg_backup.timer
+    dest: "/lib/systemd/system/borg_backup.timer"
+    mode: '0644'
+- name: Enable the newly added systemd timer
+  become: true
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: "borg_backup.timer"
+    state: started
+    enabled: true

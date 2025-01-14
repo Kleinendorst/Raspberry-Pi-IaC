@@ -3,11 +3,15 @@
   become: true
   ansible.builtin.apt:
     pkg:
+      - tldr
+      - tree
       - git
       - vim
       - dnsutils
       - rsyslog
       - snapd
+      - yq
+      - borgbackup
     state: present
 - name: Install Snap Core
   become: true
