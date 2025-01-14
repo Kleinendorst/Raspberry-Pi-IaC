@@ -15,14 +15,14 @@
     owner: root
     group: root
     mode: '0700'
-# - name: Copy over script
-#   become: true
-#   ansible.builtin.copy:
-#     src: backup_script.sh
-#     dest: "{{ backups_script_path }}"
-#     owner: root
-#     group: root
-#     mode: '0700'
+- name: Copy over script
+  become: true
+  ansible.builtin.copy:
+    src: backup_script.sh
+    dest: "{{ backups_script_path }}"
+    owner: root
+    group: root
+    mode: '0700'
 - name: Ensure directory for configuration file exists
   become: true
   ansible.builtin.file:
@@ -39,3 +39,22 @@
     owner: root
     group: root
     mode: '0400'
+- name: Install BorgBase backup service file
+  become: true
+  ansible.builtin.template:
+    src: borg_backup.service.j2
+    dest: "/lib/systemd/system/borg_backup.service"
+    mode: '0644'
+- name: Install BorgBase backup timer file
+  become: true
+  ansible.builtin.copy:
+    src: borg_backup.timer
+    dest: "/lib/systemd/system/borg_backup.timer"
+    mode: '0644'
+- name: Enable the newly added systemd timer
+  become: true
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+    name: "borg_backup.timer"
+    state: started
+    enabled: true

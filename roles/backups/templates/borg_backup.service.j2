@@ -1,0 +1,15 @@
+[Unit]
+Description=BorgBase backup service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart={{ backups_script_path }} {{ backups_configuration_path }}
+Environment="BORG_REPO={{ borg_base.repo_url }}"
+Environment="BORG_PASSPHRASE={{ borg_backup_password }}"
+
+[Install]
+WantedBy=default.target
