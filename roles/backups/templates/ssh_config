@@ -1,0 +1,5 @@
+Host {{ borg_base.remote_host }}
+    HostName {{ borg_base.remote_host }}
+    User {{ borg_base.remote_user }}
+    IdentityFile {{ backup_script_ssh_key_location }}
+    StrictHostKeyChecking accept-new

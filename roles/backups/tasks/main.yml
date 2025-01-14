@@ -1,12 +1,28 @@
 ---
-- name: Copy over script
+# From within the script we're pushing backups to a specialised service (BorgBackup), This step ensure that an SSH key is present to use
+# for verification on that service. Currently it has to be manually read out and entered in the service. This step has to be repeated
+# when freshly applying this setup.
+- name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
   become: true
-  ansible.builtin.copy:
-    src: backup_script.sh
-    dest: "{{ backups_script_path }}"
+  community.crypto.openssh_keypair:
+    path: "{{ backup_script_ssh_key_location }}"
+# Needed for the task after this apparently...
+- name: Install SSH config file
+  become: true
+  ansible.builtin.template:
+    src: ssh_config
+    dest: /root/.ssh/config
     owner: root
     group: root
     mode: '0700'
+# - name: Copy over script
+#   become: true
+#   ansible.builtin.copy:
+#     src: backup_script.sh
+#     dest: "{{ backups_script_path }}"
+#     owner: root
+#     group: root
+#     mode: '0700'
 - name: Ensure directory for configuration file exists
   become: true
   ansible.builtin.file:
