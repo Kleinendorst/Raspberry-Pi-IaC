@@ -7,7 +7,11 @@ logInfo() { printf '%(%Y-%m-%d %H:%m:%S)T [INFO]: %s\n' -1 "$*" >&2; }
 
 configurationFileLocation=$1
 
-workDirPath=/root/backup_work_dir
+# Working on the bulk directory which is mounted on a very big SSD, this way we don't have to wory about
+# running out of disk space. Note however that borg specifically might make use of cache directories
+# in the home directory which aren't on this disk, let's tackle this problem when it actually starts failing...
+workDirPath=/bulk/backup_work_dir
+borgRepoDir="$workDirPath/borg_backups" # Used throughout the script
 logInfo "Creating working directory at: $workDirPath..."
 mkdir -p "$workDirPath"
 
@@ -107,9 +111,36 @@ createAllDockerVolumeBackups() {
 }
 # endregion: --- DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
 
+# region: ------ BORG_BACKUPS ---------------------------------------------------------------------
+createArchiveInRepository() {
+    logInfo "Creating new archive in Borg repository (at $borgRepoDir)..."
+
+    (
+        cd "$workDirPath"
+
+        # Note that BORG_PASSPHRASE is supposed to be set, otherwise a passowrd prompt will be present...
+        borg create --stats --verbose --show-rc --compression zstd,11 \
+            "$borgRepoDir::{fqdn}-{now:%Y-%m-%d}" \
+            ./docker_volumes ./postgres
+
+        logInfo "Pruning old backups..."
+        # Copied from: https://borgbackup.readthedocs.io/en/stable/quickstart.html as it seems
+        # like good defaults.
+        borg prune --verbose --glob-archives '{fqdn}-*' --show-rc \
+            --keep-daily 7 --keep-weekly 4 --keep-monthly 6 \
+            "$borgRepoDir"
+
+        logInfo "Compacting repository..."
+        borg compact --verbose --show-rc "$borgRepoDir"
+    )
+}
+# endregion: --- BORG_BACKUPS ---------------------------------------------------------------------
 
 # region: ------ PREPARE_BACKUP_FILES -------------------------------------------------------------
 createAllDatabaseBackups
 echo
 createAllDockerVolumeBackups
+echo
+# TODO: fetchOldBackupRepositoryFromCloud
+createArchiveInRepository
 # endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------
