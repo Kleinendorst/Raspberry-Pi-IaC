@@ -1,0 +1,25 @@
+---
+- name: Copy over script
+  become: true
+  ansible.builtin.copy:
+    src: backup_script.sh
+    dest: "{{ backups_script_path }}"
+    owner: root
+    group: root
+    mode: '0700'
+- name: Ensure directory for configuration file exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ backups_configuration_path | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+- name: Copy over configuration
+  become: true
+  ansible.builtin.template:
+    src: backup_configuration.yaml
+    dest: "{{ backups_configuration_path }}"
+    owner: root
+    group: root
+    mode: '0400'

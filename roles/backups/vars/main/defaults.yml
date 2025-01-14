@@ -1,0 +1,3 @@
+---
+backups_script_path: /usr/local/bin/backup_script.sh
+backups_configuration_path: /etc/borg_backup_script/backup_configuration.yaml

@@ -3,6 +3,7 @@
   become: true
   ansible.builtin.apt:
     pkg:
+      - tldr
       - git
       - vim
       - dnsutils
