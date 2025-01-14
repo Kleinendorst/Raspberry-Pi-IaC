@@ -11,16 +11,15 @@ configurationFileLocation=$1
 # running out of disk space. Note however that borg specifically might make use of cache directories
 # in the home directory which aren't on this disk, let's tackle this problem when it actually starts failing...
 workDirPath=/bulk/backup_work_dir
-borgRepoDir="$workDirPath/borg_backups" # Used throughout the script
 logInfo "Creating working directory at: $workDirPath..."
 mkdir -p "$workDirPath"
 
 cleanup() {
-    logInfo "Backup interrupted"
-    # rm -f "$workDirPath" # TODO: Enable
-    exit 2
+    logInfo "Removing working directory at: $workDirPath..."
+    rm -rf "$workDirPath"
 }
-trap 'cleanup' INT TERM
+trap 'logInfo "Backup interrupted"; cleanup; exit 2' INT TERM
+trap 'logInfo "Backup completed, cleaning up..."; cleanup' EXIT
 
 # region: ------ DB_BACKUPS -----------------------------------------------------------------------
 createDatabaseBackup() {
@@ -113,25 +112,24 @@ createAllDockerVolumeBackups() {
 
 # region: ------ BORG_BACKUPS ---------------------------------------------------------------------
 createArchiveInRepository() {
-    logInfo "Creating new archive in Borg repository (at $borgRepoDir)..."
+    logInfo "Creating new archive in Borg repository (at $BORG_REPO)..."
 
     (
         cd "$workDirPath"
 
-        # Note that BORG_PASSPHRASE is supposed to be set, otherwise a passowrd prompt will be present...
+        # Note that both BORG_PASSPHRASE and BORG_REPO should be set, otherwise a password prompt will be present...
         borg create --stats --verbose --show-rc --compression zstd,11 \
-            "$borgRepoDir::{fqdn}-{now:%Y-%m-%d}" \
+            "::{fqdn}-{now:%Y-%m-%d}" \
             ./docker_volumes ./postgres
 
         logInfo "Pruning old backups..."
         # Copied from: https://borgbackup.readthedocs.io/en/stable/quickstart.html as it seems
         # like good defaults.
         borg prune --verbose --glob-archives '{fqdn}-*' --show-rc \
-            --keep-daily 7 --keep-weekly 4 --keep-monthly 6 \
-            "$borgRepoDir"
+            --keep-daily 7 --keep-weekly 4 --keep-monthly 6
 
         logInfo "Compacting repository..."
-        borg compact --verbose --show-rc "$borgRepoDir"
+        borg compact --verbose --show-rc
     )
 }
 # endregion: --- BORG_BACKUPS ---------------------------------------------------------------------
@@ -141,6 +139,5 @@ createAllDatabaseBackups
 echo
 createAllDockerVolumeBackups
 echo
-# TODO: fetchOldBackupRepositoryFromCloud
 createArchiveInRepository
 # endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------
