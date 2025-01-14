@@ -18,7 +18,7 @@ cleanup() {
 }
 trap 'cleanup' INT TERM
 
-# region: ---------------------------------- DBBACKUPS ----------------------------------
+# region: ------ DB_BACKUPS -----------------------------------------------------------------------
 createDatabaseBackup() {
     host=$1
     dbname=$2
@@ -64,6 +64,52 @@ createAllDatabaseBackups() {
         createDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
     done
 }
-# endregion: ------------------------------- DBBACKUPS ----------------------------------
+# endregion: --- DB_BACKUPS -----------------------------------------------------------------------
 
+# region: ------ DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
+createDockerVolumeBackup() {
+    containerName=$1
+    volumeName=$2
+    specificVolumeBackupPath=$3
+
+    logInfo "Backup up Docker volume: $volumeName from running container: $containerName..."
+
+    logInfo "Stopping container: $containerName..."
+    docker stop "$containerName"
+
+    logInfo "Starting new container which copies over files..."
+    start=$SECONDS
+    docker run --rm -v "$volumeName:/volume" -v "$specificVolumeBackupPath:/target" --entrypoint "ash"\
+        alpine -c "cp -rf /volume/* /target/"
+
+    elapsedSeconds=$(( SECONDS - start ))
+    logInfo "Copying succeeded (in $elapsedSeconds seconds), restarting container..."
+    docker start "$containerName"
+}
+
+createAllDockerVolumeBackups() {
+    nrOfConfigurations="$(yq '.docker_volume_backups | length' <"$configurationFileLocation")"
+    logInfo "Backing up from $nrOfConfigurations docker configurations..."
+
+    dockerVolumeBackupPath="$workDirPath/docker_volumes"
+    mkdir -p "$dockerVolumeBackupPath"
+
+    for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
+        dockerConfiguration="$(yq ".docker_volume_backups[$i]" <"$configurationFileLocation")"
+        containerName="$(echo "$dockerConfiguration" | jq -r '.container_name')"
+        volumeName="$(echo "$dockerConfiguration" | jq -r '.volume_name')"
+
+        specificVolumeBackupPath="$dockerVolumeBackupPath/$volumeName"
+        mkdir -p "$specificVolumeBackupPath"
+
+        createDockerVolumeBackup "$containerName" "$volumeName" "$specificVolumeBackupPath"
+    done
+}
+# endregion: --- DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
+
+
+# region: ------ PREPARE_BACKUP_FILES -------------------------------------------------------------
 createAllDatabaseBackups
+echo
+createAllDockerVolumeBackups
+# endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------

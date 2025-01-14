@@ -4,3 +4,16 @@ database_backups:
     dbname: wedding
     username: wedding
     password: "{{ wedding_postgres_pass }}"
+docker_volume_backups:
+  - volume_name: actual_data
+    container_name: actual-server
+  - volume_name: grafana_data
+    container_name: grafana-server
+  - volume_name: changedetection_changedetection_data
+    container_name: changedetection-changedetection-server-1
+  - volume_name: hoarder_hoarder_data
+    container_name: hoarder-web-1
+  - volume_name: hoarder_meilisearch
+    container_name: hoarder-meilisearch-1
+  - volume_name: portainer_data
+    container_name: portainer
