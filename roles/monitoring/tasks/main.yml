@@ -1,4 +1,13 @@
 ---
+# See: https://github.com/google/cadvisor/issues/3469#issuecomment-2005749081
+# Also seems to require a reboot...
+- name: Append cgroup variables to RaspberryPi file
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/cmdline.txt
+    backrefs: true
+    regexp: "^(.*rootwait)$" # Just the default value in the file at the end, hopefully this works on fresh installs as well...
+    line: '\1 cgroup_memory=1 cgroup_enable=memory'
 - name: Install the container
   become: true
   community.docker.docker_container:
