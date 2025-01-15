@@ -10,4 +10,4 @@ collections:
 roles:
   # See: https://galaxy.ansible.com/ui/standalone/roles/geerlingguy/docker/
   - name: geerlingguy.docker
-    version: 7.4.3
+    version: 7.4.4
