@@ -12,6 +12,8 @@ versions:
   # Changelog: https://github.com/immich-app/immich/releases
   immich: v1.124.2
   monitoring:
+    # Releases: https://github.com/google/cadvisor/releases/
+    cAdvisor: v0.49.2
     # Changelog: https://github.com/prometheus/prometheus/blob/main/CHANGELOG.md
     # Note that version 3.0.0 was just released, upgrading is probably necessary.
     prometheus: 3.0.1

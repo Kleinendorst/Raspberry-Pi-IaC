@@ -14,6 +14,9 @@ prometheus_targets:
   postgres:
     - targets:
         - raspberry-pi-1.kleinendorst.info:9187
+  cadvisor:
+    - targets:
+        - raspberry-pi-1.kleinendorst.info:8091
 prometheus_web_listen_address: 127.0.0.1:9090
 prometheus_scrape_configs:
   - job_name: "prometheus"
@@ -32,6 +35,10 @@ prometheus_scrape_configs:
     file_sd_configs:
       - files:
           - "{{ prometheus_config_dir }}/file_sd/postgres.yml"
+  - job_name: "cadvisor"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/cadvisor.yml"
 prometheus_alertmanager_config:
   - static_configs:
       - targets:
