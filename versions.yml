@@ -10,7 +10,7 @@ versions:
     # for arm64.
     headless_chrome: latest
   # Changelog: https://github.com/immich-app/immich/releases
-  immich: v1.125.2
+  immich: v1.125.7
   monitoring:
     # Releases: https://github.com/google/cadvisor/releases/
     cAdvisor: v0.49.2
