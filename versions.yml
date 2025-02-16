@@ -4,13 +4,13 @@ versions:
   actual: 25.2.1
   changedetection:
     # Changelog: https://changedetection.io/CHANGELOG.txt
-    self: 0.49.0
+    self: 0.49.1
     # ⬇️ This isn't preferable, i'd rather pin a version. However
     # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
     # for arm64.
     headless_chrome: latest
   # Changelog: https://github.com/immich-app/immich/releases
-  immich: v1.125.7
+  immich: v1.126.1
   monitoring:
     # Releases: https://github.com/google/cadvisor/releases/
     cAdvisor: v0.49.2
@@ -24,11 +24,11 @@ versions:
     grafana: 11.5.1
   postgres:
     # Docker version: https://hub.docker.com/_/postgres
-    self: 17.2-alpine
+    self: 17.3-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.16.0
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
-  wedding: 0.0.19
+  wedding: 0.0.21
   # Releases: https://github.com/cloudflare/cloudflared/releases
   cloudflared: 2025.2.0
   # Releases: https://github.com/hoarder-app/hoarder/releases
