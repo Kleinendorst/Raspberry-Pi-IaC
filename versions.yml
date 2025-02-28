@@ -2,13 +2,14 @@
 versions:
   # Changelog: https://actualbudget.org/docs/releases/
   actual: 25.2.1
-  changedetection:
-    # Changelog: https://changedetection.io/CHANGELOG.txt
-    self: 0.49.1
-    # ⬇️ This isn't preferable, i'd rather pin a version. However
-    # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
-    # for arm64.
-    headless_chrome: latest
+  # ⬇️ Currently disabled
+  # changedetection:
+  #   # Changelog: https://changedetection.io/CHANGELOG.txt
+  #   self: 0.49.1
+  #   # ⬇️ This isn't preferable, i'd rather pin a version. However
+  #   # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
+  #   # for arm64.
+  #   headless_chrome: latest
   # Changelog: https://github.com/immich-app/immich/releases
   immich: v1.127.0
   monitoring:

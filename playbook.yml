@@ -21,14 +21,14 @@
     - role: cloudflare-ddns
     - role: cloudflared
     - role: nginx
+    - role: portainer
     - role: actual
     - role: postgres
     - role: wedding
-    - role: changedetection
     - role: monitoring
     - role: immich
     - role: hoarder
-    - role: portainer
+    - role: backups
   vars:
     # devsec.hardening.ssh_hardening vars:
     ssh_client_port: 22 # Default, but duplicated here for documentation purpose. Not changed because its only accessible via LAN.
