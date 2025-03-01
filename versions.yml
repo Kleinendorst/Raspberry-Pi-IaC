@@ -29,7 +29,7 @@ versions:
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.16.0
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
-  wedding: 1.0.0
+  wedding: 1.0.1
   # Releases: https://github.com/cloudflare/cloudflared/releases
   cloudflared: 2025.2.1
   # Releases: https://github.com/hoarder-app/hoarder/releases
