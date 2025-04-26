@@ -11,18 +11,18 @@ versions:
   #   # for arm64.
   #   headless_chrome: latest
   # Changelog: https://github.com/immich-app/immich/releases
-  immich: v1.131.3
+  immich: v1.132.1
   monitoring:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
-    cAdvisor: v0.51.0
+    cAdvisor: v0.52.0
     # Versions: https://prometheus.io/download/
-    prometheus: 3.2.1
+    prometheus: 3.3.0
     # Changelog: https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md
     node_exporter: 1.9.0
     # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
-    alertmanager: 0.28.0
+    alertmanager: 0.28.1
     # Changelog: https://github.com/grafana/grafana/blob/main/CHANGELOG.md
-    grafana: 11.6.0
+    grafana: 11.6.1
   postgres:
     # Docker version: https://hub.docker.com/_/postgres
     self: 17.4-alpine
@@ -33,6 +33,6 @@ versions:
   # Releases: https://github.com/cloudflare/cloudflared/releases
   cloudflared: 2025.4.0
   # Releases: https://github.com/hoarder-app/hoarder/releases
-  hoarder_version: 0.23.0
+  hoarder_version: 0.23.2
   # Releases: https://github.com/portainer/portainer/releases
-  portainer: 2.27.3
+  portainer: 2.29.2
