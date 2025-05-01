@@ -1,5 +1,5 @@
 {
-    "ansible.python.interpreterPath": "/home/thomas/python_venv/bin/python",
+    "ansible.python.interpreterPath": "/opt/homebrew/bin/python3.12",
     "files.associations": {
         "*.yml": "ansible"
     },
