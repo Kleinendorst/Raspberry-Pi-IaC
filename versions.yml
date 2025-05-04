@@ -1,7 +1,5 @@
 ---
 versions:
-  # Changelog: https://actualbudget.org/docs/releases/
-  actual: 25.4.0
   # ⬇️ Currently disabled
   # changedetection:
   #   # Changelog: https://changedetection.io/CHANGELOG.txt
