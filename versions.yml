@@ -25,10 +25,8 @@ versions:
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.17.1
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
+  # TODO: Automatic updates via WatchTower could be enabled. I'll have to make sure
+  #       that all containers are tagged as 'latest' as well.
   wedding: 1.0.2
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2025.4.0
-  # Releases: https://github.com/hoarder-app/hoarder/releases
-  hoarder_version: 0.23.2
-  # Releases: https://github.com/portainer/portainer/releases
-  portainer: 2.29.2
+  cloudflared: 2025.4.2
