@@ -17,11 +17,9 @@ versions:
     node_exporter: 1.9.0
     # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
     alertmanager: 0.28.1
-    # Changelog: https://github.com/grafana/grafana/blob/main/CHANGELOG.md
-    grafana: 11.6.1
   postgres:
     # Docker version: https://hub.docker.com/_/postgres
-    self: 17.4-alpine
+    self: 17-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.17.1
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
