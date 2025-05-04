@@ -9,7 +9,7 @@
   become: true
   community.docker.docker_container:
     name: wedding-server
-    image: "ghcr.io/kleinendorst/wedding:{{ versions.wedding }}"
+    image: "ghcr.io/kleinendorst/wedding:latest"
     image_name_mismatch: recreate
     ports:
       - "127.0.0.1:3001:3000/tcp"
