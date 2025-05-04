@@ -5,10 +5,19 @@
     name: watchtower
     image: "containrrr/watchtower:latest"
     env:
-      # WATCHTOWER_POLL_INTERVAL: "10800" # 3 hours
-      WATCHTOWER_POLL_INTERVAL: "60"
+      WATCHTOWER_POLL_INTERVAL: "10800" # 3 hours
+      # These containers don't have a tag set but refer to a direct hash.
+      # It throws a warning on each interval when scanned. This setting
+      # specifically disabled checking these.
+      WATCHTOWER_DISABLE_CONTAINERS: "immich_redis,immich_postgres"
     mounts:
       - source: /var/run/docker.sock
         target: /var/run/docker.sock
+        type: bind
+      # See: https://containrrr.dev/watchtower/private-registries/#share_the_docker_configuration_file
+      # Used so that the private repositories of root can be pulled (with the credentials).
+      # This affects the wedding container registry (hosted on ghcr.io).
+      - source: /root/.docker/config.json
+        target: /config.json
         type: bind
     restart_policy: always
