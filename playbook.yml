@@ -1,7 +1,4 @@
 ---
-# Notice that "# noqa: package-latest" is included in this file. This disabled a specific check for the Ansible linter,
-# see: https://ansible.readthedocs.io/projects/lint/usage/#muting-warnings-to-avoid-false-positives.
-# For a purely reproducible build this would be a good suggestion but I'm willing to take the risk with the Pi.
 - name: Install raspberry pi
   hosts: raspberry_pis
   vars_files:
