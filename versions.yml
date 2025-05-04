@@ -8,8 +8,6 @@ versions:
   #   # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
   #   # for arm64.
   #   headless_chrome: latest
-  # Changelog: https://github.com/immich-app/immich/releases
-  immich: v1.132.3
   monitoring:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
     cAdvisor: v0.52.0
