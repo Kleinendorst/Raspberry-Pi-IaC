@@ -1,0 +1,15 @@
+---
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: watchtower
+    image: "containrrr/watchtower:latest"
+    env:
+      # WATCHTOWER_POLL_INTERVAL: "10800" # 3 hours
+      WATCHTOWER_POLL_INTERVAL: "60"
+      WATCHTOWER_LABEL_ENABLE: "true"
+    mounts:
+      - source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        type: bind
+    restart_policy: always
