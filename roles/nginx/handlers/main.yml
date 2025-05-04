@@ -3,6 +3,7 @@
   become: true
   ansible.builtin.command:
     cmd: snap set certbot trust-plugin-with-root=ok
+  changed_when: false # Assume this commands always changes. It's a handler so it's run once anyway.
 - name: Restart Nginx
   become: true
   ansible.builtin.systemd:
