@@ -7,7 +7,7 @@
   become: true
   community.docker.docker_container:
     name: portainer
-    image: "portainer/portainer-ce:{{ versions.portainer }}"
+    image: "portainer/portainer-ce:latest"
     image_name_mismatch: recreate
     ports:
       # - "127.0.0.1:9443:9443/tcp" # TCP port, not used

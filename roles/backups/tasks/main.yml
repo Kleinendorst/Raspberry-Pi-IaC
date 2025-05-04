@@ -5,7 +5,7 @@
 - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
   become: true
   community.crypto.openssh_keypair:
-    path: "{{ backup_script_ssh_key_location }}"
+    path: "{{ backups_script_ssh_key_location }}"
 # Needed for the task after this apparently...
 - name: Install SSH config file
   become: true

@@ -1,7 +1,5 @@
 ---
 versions:
-  # Changelog: https://actualbudget.org/docs/releases/
-  actual: 25.4.0
   # ⬇️ Currently disabled
   # changedetection:
   #   # Changelog: https://changedetection.io/CHANGELOG.txt
@@ -10,8 +8,6 @@ versions:
   #   # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
   #   # for arm64.
   #   headless_chrome: latest
-  # Changelog: https://github.com/immich-app/immich/releases
-  immich: v1.132.3
   monitoring:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
     cAdvisor: v0.52.0
@@ -21,18 +17,14 @@ versions:
     node_exporter: 1.9.0
     # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
     alertmanager: 0.28.1
-    # Changelog: https://github.com/grafana/grafana/blob/main/CHANGELOG.md
-    grafana: 11.6.1
   postgres:
     # Docker version: https://hub.docker.com/_/postgres
-    self: 17.4-alpine
+    self: 17-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.17.1
   # Releases: https://github.com/Kleinendorst/wedding/pkgs/container/wedding
+  # TODO: Automatic updates via WatchTower could be enabled. I'll have to make sure
+  #       that all containers are tagged as 'latest' as well.
   wedding: 1.0.2
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2025.4.0
-  # Releases: https://github.com/hoarder-app/hoarder/releases
-  hoarder_version: 0.23.2
-  # Releases: https://github.com/portainer/portainer/releases
-  portainer: 2.29.2
+  cloudflared: 2025.4.2
