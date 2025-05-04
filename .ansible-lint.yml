@@ -1,0 +1,7 @@
+---
+# See: roles/monitoring/vars/main/defaults.yml
+# The file above would throw the errors based on this rule. I might want
+# to change this later but currently these variables don't include prefixes
+# because they match the variables used in sub roles.
+skip_list:
+  - var-naming[no-role-prefix]
