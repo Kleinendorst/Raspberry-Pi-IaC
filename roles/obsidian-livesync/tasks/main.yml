@@ -1,0 +1,26 @@
+---
+- name: Create a volume - couchdb_data
+  become: true
+  community.docker.docker_volume:
+    name: couchdb_data
+- name: Create a volume - couchdb_etc
+  become: true
+  community.docker.docker_volume:
+    name: couchdb_etc
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: couchdb
+    image: "couchdb:3"
+    image_name_mismatch: recreate
+    ports:
+      - "127.0.0.1:5984:5984/tcp"
+    mounts:
+      - source: couchdb_data
+        target: /opt/couchdb/data
+      - source: couchdb_etc
+        target: /opt/couchdb/etc/local.d
+    env:
+      COUCHDB_USER: "{{ couchdb_username }}"
+      COUCHDB_PASSWORD: "{{ couchdb_password }}"
+    restart_policy: always

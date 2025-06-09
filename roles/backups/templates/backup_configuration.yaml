@@ -18,3 +18,7 @@ docker_volume_backups:
     container_name: hoarder-meilisearch-1
   - volume_name: portainer_data
     container_name: portainer
+  - volume_name: couchdb_data
+    container_name: couchdb
+  - volume_name: couchdb_etc
+    container_name: couchdb
