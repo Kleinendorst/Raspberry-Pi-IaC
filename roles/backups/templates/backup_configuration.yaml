@@ -22,5 +22,3 @@ docker_volume_backups:
     container_name: hoarder-meilisearch-1
   - volume_name: portainer_data
     container_name: portainer
-  - volume_name: memos_data
-    container_name: memos-server
