@@ -5,11 +5,6 @@
     name: memos-server
     image: "neosmemo/memos:stable"
     image_name_mismatch: recreate
-    # command:
-    #   - '--driver'
-    #   - 'postgres'
-    #   - '--dsn'
-    #   - 'postgresql://postgres:PASSWORD@localhost:5432/memos'
     env:
       MEMOS_DRIVER: 'postgres'
       MEMOS_DSN: "postgresql://{{ memos_postgres_user }}:{{ memos_postgres_password }}@postgres.kleinendorst.info:5432/memos"
