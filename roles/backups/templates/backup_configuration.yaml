@@ -4,6 +4,10 @@ database_backups:
     dbname: wedding
     username: wedding
     password: "{{ wedding_postgres_pass }}"
+  - host: postgres.kleinendorst.info
+    dbname: memos
+    username: memos
+    password: "{{ memos_postgres_pass }}"
 docker_volume_backups:
   - volume_name: actual_data
     container_name: actual-server

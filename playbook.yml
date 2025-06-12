@@ -25,6 +25,7 @@
     - role: monitoring
     - role: immich
     - role: hoarder
+    - role: memos
     - role: backups
   vars:
     # devsec.hardening.ssh_hardening vars:

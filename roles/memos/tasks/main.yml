@@ -1,0 +1,13 @@
+---
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: memos-server
+    image: "neosmemo/memos:stable"
+    image_name_mismatch: recreate
+    env:
+      MEMOS_DRIVER: 'postgres'
+      MEMOS_DSN: "postgresql://{{ memos_postgres_user }}:{{ memos_postgres_password }}@postgres.kleinendorst.info:5432/memos"
+    ports:
+      - "127.0.0.1:5230:5230/tcp"
+    restart_policy: always
