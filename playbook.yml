@@ -23,6 +23,7 @@
     - role: postgres
     - role: wedding
     - role: monitoring
+    - role: watchtower
     - role: immich
     - role: hoarder
     - role: memos
