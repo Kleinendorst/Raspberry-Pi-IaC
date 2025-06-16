@@ -1,18 +1,10 @@
 ---
 versions:
-  # ⬇️ Currently disabled
-  # changedetection:
-  #   # Changelog: https://changedetection.io/CHANGELOG.txt
-  #   self: 0.49.1
-  #   # ⬇️ This isn't preferable, i'd rather pin a version. However
-  #   # it's quite hard to find a suitable candidate (https://hub.docker.com/r/browserless/chrome/tags)
-  #   # for arm64.
-  #   headless_chrome: latest
   monitoring:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
     cAdvisor: v0.52.0
     # Versions: https://prometheus.io/download/
-    prometheus: 3.3.0
+    prometheus: 3.4.1
     # Changelog: https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md
     node_exporter: 1.9.0
     # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
@@ -23,4 +15,4 @@ versions:
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.17.1
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2025.4.2
+  cloudflared: 2025.6.0
