@@ -1,29 +1,23 @@
 ---
 - name: Create the compose project directory
   ansible.builtin.file:
-    path: "/home/{{ ansible_user_id }}/hoarder"
+    path: "/home/{{ ansible_user_id }}/karakeep"
     state: directory
     owner: "{{ ansible_user_id }}"
     mode: '0744'
 - name: Create the docker-compose.yml file
   ansible.builtin.template:
     src: docker-compose.yml.j2
-    dest: "/home/{{ ansible_user_id }}/hoarder/docker-compose.yml"
+    dest: "/home/{{ ansible_user_id }}/karakeep/docker-compose.yml"
     owner: "{{ ansible_user_id }}"
     mode: '0644'
 - name: Create the .env file
   ansible.builtin.template:
     src: .env.j2
-    dest: "/home/{{ ansible_user_id }}/hoarder/.env"
+    dest: "/home/{{ ansible_user_id }}/karakeep/.env"
     owner: "{{ ansible_user_id }}"
     mode: '0644'
 - name: Create and start services
   become: true
   community.docker.docker_compose_v2:
-    project_src: "/home/{{ ansible_user_id }}/hoarder/"
-- name: Include simple-reverse-proxy role
-  ansible.builtin.include_role:
-    name: simple-reverse-proxy
-  vars:
-    simple_reverse_proxy_internal_port: 3002
-    simple_reverse_proxy_internal_subdomain: local.hoarder
+    project_src: "/home/{{ ansible_user_id }}/karakeep/"

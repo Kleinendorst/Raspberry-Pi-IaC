@@ -16,9 +16,9 @@ docker_volume_backups:
   # The logs mentioned that a non writeable database was being used...
   - volume_name: grafana_data
     container_name: grafana-server
-  - volume_name: hoarder_hoarder_data
-    container_name: hoarder-web-1
-  - volume_name: hoarder_meilisearch
-    container_name: hoarder-meilisearch-1
+  - volume_name: karakeep_karakeep_data
+    container_name: karakeep-web-1
+  - volume_name: karakeep_meilisearch
+    container_name: karakeep-meilisearch-1
   - volume_name: portainer_data
     container_name: portainer

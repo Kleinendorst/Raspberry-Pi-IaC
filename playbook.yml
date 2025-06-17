@@ -27,7 +27,7 @@
     - role: immich
     - role: stirling-pdf
     - role: cyberchef
-    - role: hoarder
+    - role: karakeep
     - role: memos
     - role: backups
   vars:
