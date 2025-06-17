@@ -3,3 +3,4 @@ cloudflare ddns/ddns_config.ini
 .vault_pass
 .ansible_facts.json
 __pycache__
+.DS_Store

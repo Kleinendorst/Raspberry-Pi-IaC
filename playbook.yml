@@ -26,6 +26,7 @@
     - role: watchtower
     - role: immich
     - role: stirling-pdf
+    - role: cyberchef
     - role: hoarder
     - role: memos
     - role: backups
