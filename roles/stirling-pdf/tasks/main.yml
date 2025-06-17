@@ -1,0 +1,19 @@
+---
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: stirling-pdf
+    image: "docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest"
+    image_name_mismatch: recreate
+    env:
+      DISABLE_ADDITIONAL_FEATURES: 'false'
+      LANGS: 'en_GB'
+    ports:
+      - "127.0.0.1:8087:8080/tcp"
+    restart_policy: always
+- name: Include simple-reverse-proxy role
+  ansible.builtin.include_role:
+    name: simple-reverse-proxy
+  vars:
+    simple_reverse_proxy_internal_port: 8087
+    simple_reverse_proxy_internal_subdomain: stirling-pdf

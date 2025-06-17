@@ -25,6 +25,7 @@
     - role: monitoring
     - role: watchtower
     - role: immich
+    - role: stirling-pdf
     - role: hoarder
     - role: memos
     - role: backups
