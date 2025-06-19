@@ -15,9 +15,9 @@
   become: true
   community.docker.docker_compose_v2:
     project_src: "/home/{{ ansible_user_id }}/changedetection/"
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 5000
-    simple_reverse_proxy_internal_subdomain: changedetection
+    proxy_setup_internal_port: 5000
+    proxy_setup_internal_subdomain: changedetection

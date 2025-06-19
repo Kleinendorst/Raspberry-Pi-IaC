@@ -11,9 +11,9 @@
     ports:
       - "127.0.0.1:8087:8080/tcp"
     restart_policy: always
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 8087
-    simple_reverse_proxy_internal_subdomain: stirling-pdf
+    proxy_setup_internal_port: 8087
+    proxy_setup_internal_subdomain: stirling-pdf

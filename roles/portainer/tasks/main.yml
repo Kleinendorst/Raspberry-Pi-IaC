@@ -20,9 +20,9 @@
         target: /var/run/docker.sock
         type: bind
     restart_policy: always
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 9000
-    simple_reverse_proxy_internal_subdomain: portainer
+    proxy_setup_internal_port: 9000
+    proxy_setup_internal_subdomain: portainer

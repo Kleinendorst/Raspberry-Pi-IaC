@@ -41,33 +41,33 @@
     devices:
       - /dev/kmsg
     restart_policy: always
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 8091
-    simple_reverse_proxy_internal_subdomain: cadvisor
+    proxy_setup_internal_port: 8091
+    proxy_setup_internal_subdomain: cadvisor
 - name: Include the Prometheus role
   ansible.builtin.include_role:
     name: prometheus.prometheus.prometheus
-- name: Include simple-reverse-proxy role - Prometheus
+- name: Include proxy-setup role - Prometheus
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 9090
-    simple_reverse_proxy_internal_subdomain: prometheus
+    proxy_setup_internal_port: 9090
+    proxy_setup_internal_subdomain: prometheus
 - name: Include the Prometheus - node exporter role
   ansible.builtin.include_role:
     name: prometheus.prometheus.node_exporter
 - name: Include the Prometheus - alertmanager role
   ansible.builtin.include_role:
     name: prometheus.prometheus.alertmanager
-- name: Include simple-reverse-proxy role - Prometheus
+- name: Include proxy-setup role - Prometheus
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 9093
-    simple_reverse_proxy_internal_subdomain: alertmanager
+    proxy_setup_internal_port: 9093
+    proxy_setup_internal_subdomain: alertmanager
 # region: Install Grafana
 # With the current approach we store the internal database in a docker volume which is included in the backup. All data included
 # consists of configuration of grafana: user information, dashboards, datasources, etc.
@@ -93,9 +93,9 @@
     env:
       GF_INSTALL_PLUGINS: "grafana-clock-panel 2.1.8"
     restart_policy: always
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 3000
-    simple_reverse_proxy_internal_subdomain: grafana
+    proxy_setup_internal_port: 3000
+    proxy_setup_internal_subdomain: grafana

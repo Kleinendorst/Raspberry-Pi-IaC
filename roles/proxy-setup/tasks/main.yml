@@ -1,0 +1,20 @@
+---
+- name: "Install certificate for {{ proxy_setup_internal_subdomain }}.kleinendorst.info"
+  become: true
+  ansible.builtin.command:
+    cmd: "register_certbot_domain.sh {{ proxy_setup_internal_subdomain }}.kleinendorst.info"
+    creates: "/etc/letsencrypt/live/{{ proxy_setup_internal_subdomain }}.kleinendorst.info" # The certificate directory
+- name: Set Nginx configuration
+  become: true
+  ansible.builtin.template:
+    src: nginx-configuration.conf.j2
+    dest: "/etc/nginx/conf.d/{{ proxy_setup_internal_subdomain }}.conf"
+    mode: '0644'
+  notify: Restart Nginx
+- name: Add DNS record in Cloudflare
+  community.general.cloudflare_dns:
+    domain: kleinendorst.info
+    record: "{{ proxy_setup_internal_subdomain }}"
+    type: A
+    value: "{{ ansible_facts['default_ipv4']['address'] }}"
+    api_token: "{{ dns_cloudflare_token }}"

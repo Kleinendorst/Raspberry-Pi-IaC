@@ -27,9 +27,9 @@
 # Locally on the network (with a 5 GiB upload size limit):
 # local.immich.kleinendorst.info
 # This can actually be configured to be used on the WiFi network in the app.
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 2283
-    simple_reverse_proxy_internal_subdomain: local.immich
+    proxy_setup_internal_port: 2283
+    proxy_setup_internal_subdomain: local.immich
