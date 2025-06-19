@@ -11,3 +11,9 @@
     ports:
       - "127.0.0.1:5230:5230/tcp"
     restart_policy: always
+- name: Include proxy-setup role
+  ansible.builtin.include_role:
+    name: proxy-setup
+  vars:
+    proxy_setup_internal_port: 5230
+    proxy_setup_internal_subdomain: memos

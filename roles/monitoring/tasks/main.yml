@@ -62,7 +62,7 @@
 - name: Include the Prometheus - alertmanager role
   ansible.builtin.include_role:
     name: prometheus.prometheus.alertmanager
-- name: Include proxy-setup role - Prometheus
+- name: Include proxy-setup role - AlertManager
   ansible.builtin.include_role:
     name: proxy-setup
   vars:
