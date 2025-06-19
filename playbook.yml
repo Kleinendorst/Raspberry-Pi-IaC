@@ -13,6 +13,7 @@
     - role: geerlingguy.docker
       become: true
     - role: hostname
+    - role: dnsmasq
     - role: packages
     - role: user
     - role: cloudflare-ddns
