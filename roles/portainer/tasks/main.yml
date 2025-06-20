@@ -13,6 +13,10 @@
       # - "127.0.0.1:9443:9443/tcp" # TCP port, not used
       # But the opened http port is only opened for "legacy reasons", see: https://docs.portainer.io/start/install-ce/server/docker/linux
       - "127.0.0.1:9000:9000/tcp"
+    env:
+      # See: https://docs.portainer.io/advanced/reverse-proxy/nginx
+      VIRTUAL_HOST: portainer.kleinendorst.info
+      VIRTUAL_PORT: '9000'
     mounts:
       - source: portainer_data
         target: /data

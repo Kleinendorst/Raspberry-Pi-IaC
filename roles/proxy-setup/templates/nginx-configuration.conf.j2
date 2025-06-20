@@ -25,6 +25,13 @@ server {
     proxy_set_header Host $host;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
+    {% if proxy_setup_internal_subdomain == "portainer" %}
+
+    # See: https://github.com/portainer/portainer/issues/12728#issuecomment-2982150257
+    # This also fixed it for me.
+    proxy_set_header Origin "";
+    
+    {% endif %}
 
     set $upstream_address 127.0.0.1;
     set $upstream_port {{ proxy_setup_internal_port }};
