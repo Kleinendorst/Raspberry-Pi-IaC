@@ -17,7 +17,7 @@ prometheus_targets:
   cadvisor:
     - targets:
         - raspberry-pi-1.kleinendorst.info:8091
-prometheus_web_listen_address: 127.0.0.1:9090
+prometheus_web_listen_address: 0.0.0.0:9090
 prometheus_scrape_configs:
   - job_name: "prometheus"
     file_sd_configs:
@@ -49,10 +49,10 @@ node_exporter_enabled_collectors:
   - systemd
   - {"textfile": {"directory": "{{ node_exporter_textfile_dir }}"}}
   - processes
-node_exporter_web_listen_address: 127.0.0.1:9100
+node_exporter_web_listen_address: 192.168.50.27:9100
 # Alertmanager
 alertmanager_version: "{{ versions.monitoring.alertmanager }}"
-alertmanager_web_listen_address: 127.0.0.1:9093
+alertmanager_web_listen_address: 0.0.0.0:9093
 # Telegram configuration inspired by this source:
 # https://www.stranatesta.eu/tech/how-to-configure-prometheus-alertmanager-to-send-alerts-to-telegram/#configure-alertmanager
 alertmanager_receivers:

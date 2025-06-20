@@ -15,7 +15,7 @@
     image: "gcr.io/cadvisor/cadvisor:{{ versions.monitoring.cAdvisor }}"
     image_name_mismatch: recreate
     ports:
-      - "127.0.0.1:8091:8080/tcp"
+      - "192.168.50.27:8091:8080/tcp"
     mounts:
       - source: /
         target: /rootfs
@@ -86,7 +86,7 @@
     image: "docker.io/grafana/grafana:latest"
     image_name_mismatch: recreate
     ports:
-      - "127.0.0.1:3000:3000/tcp"
+      - "3000:3000/tcp"
     mounts:
       - source: grafana_data
         target: /var/lib/grafana
