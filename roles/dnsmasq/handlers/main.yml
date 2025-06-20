@@ -1,6 +1,6 @@
 ---
-- name: Restart Nginx
+- name: Restart dnsmasq
   become: true
   ansible.builtin.systemd:
-    name: nginx.service
+    name: dnsmasq.service
     state: restarted

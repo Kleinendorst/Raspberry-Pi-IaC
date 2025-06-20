@@ -13,6 +13,7 @@
     - role: geerlingguy.docker
       become: true
     - role: hostname
+    - role: dnsmasq
     - role: packages
     - role: user
     - role: cloudflare-ddns
@@ -24,7 +25,8 @@
     - role: wedding
     - role: monitoring
     - role: watchtower
-    - role: immich
+    # TODO: Enable this role at some point in the future to see if a new version fixes the issue (see inside the role).
+    # - role: immich
     - role: stirling-pdf
     - role: cyberchef
     - role: karakeep

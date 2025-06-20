@@ -13,6 +13,10 @@
       # - "127.0.0.1:9443:9443/tcp" # TCP port, not used
       # But the opened http port is only opened for "legacy reasons", see: https://docs.portainer.io/start/install-ce/server/docker/linux
       - "127.0.0.1:9000:9000/tcp"
+    env:
+      # See: https://docs.portainer.io/advanced/reverse-proxy/nginx
+      VIRTUAL_HOST: portainer.kleinendorst.info
+      VIRTUAL_PORT: '9000'
     mounts:
       - source: portainer_data
         target: /data
@@ -20,9 +24,9 @@
         target: /var/run/docker.sock
         type: bind
     restart_policy: always
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 9000
-    simple_reverse_proxy_internal_subdomain: portainer
+    proxy_setup_internal_port: 9000
+    proxy_setup_internal_subdomain: portainer

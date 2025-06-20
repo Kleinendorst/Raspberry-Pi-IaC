@@ -15,9 +15,9 @@
       - source: actual_data
         target: /data
     restart_policy: always
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 5006
-    simple_reverse_proxy_internal_subdomain: actual
+    proxy_setup_internal_port: 5006
+    proxy_setup_internal_subdomain: actual

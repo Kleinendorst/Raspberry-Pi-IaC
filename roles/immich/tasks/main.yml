@@ -5,6 +5,11 @@
     state: directory
     owner: "{{ ansible_user_id }}"
     mode: '0744'
+# There appears to be a problem when starting up the Postgres container,
+# see: https://github.com/immich-app/immich/issues/19038. A workaround is discussed which involves
+# downgrading the postgres container. I downgraded it manually (which means rerunning the role will break it).
+# According to the issue mentioned above it should be fixed quite quickly though so next time it is worth a shot
+# to see if it's fixed.
 - name: Download the Immich Dockerfile
   ansible.builtin.get_url:
     url: https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
@@ -23,13 +28,12 @@
 # Public access is provided by using a CloudFlare zero trust tunnel.
 # I however found out that the free tier has a maximum file size upload of 100 Mb which
 # can be too small for some videos that might be uploaded.
-# So in addition to the Cloudflare tunnel I also expose the service via
-# Locally on the network (with a 5 GiB upload size limit):
-# local.immich.kleinendorst.info
+# So in addition to the Cloudflare tunnel it is also exposed the service via
+# Locally on the network (with a 5 GiB upload size limit): local.immich.kleinendorst.info
 # This can actually be configured to be used on the WiFi network in the app.
-- name: Include simple-reverse-proxy role
+- name: Include proxy-setup role
   ansible.builtin.include_role:
-    name: simple-reverse-proxy
+    name: proxy-setup
   vars:
-    simple_reverse_proxy_internal_port: 2283
-    simple_reverse_proxy_internal_subdomain: local.immich
+    proxy_setup_internal_port: 2283
+    proxy_setup_internal_subdomain: local.immich

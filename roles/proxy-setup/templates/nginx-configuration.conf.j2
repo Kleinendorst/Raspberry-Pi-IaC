@@ -1,0 +1,41 @@
+server {
+  listen {{ proxy_setup_external_port }} ssl;
+  listen [::]:{{ proxy_setup_external_port }} ssl;
+  server_name {{ proxy_setup_internal_subdomain }}.kleinendorst.info;
+
+  client_max_body_size 5G;
+
+  # SSL via Let's Encrypt
+  ssl_certificate       /etc/letsencrypt/live/{{ proxy_setup_internal_subdomain }}.kleinendorst.info/fullchain.pem; # managed by Certbot
+  ssl_certificate_key   /etc/letsencrypt/live/{{ proxy_setup_internal_subdomain }}.kleinendorst.info/privkey.pem; # managed by Certbot
+  ssl_protocols         TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+  ssl_ciphers           HIGH:!aNULL:!MD5;
+
+  {% if proxy_setup_redirect_to != "" %}
+
+  location = / {
+    return 301 https://{{ proxy_setup_internal_subdomain }}.kleinendorst.info{{ proxy_setup_redirect_to }};
+  }
+
+  {% endif %}
+
+  location / {
+    proxy_http_version 1.1;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    {% if proxy_setup_internal_subdomain == "portainer" %}
+
+    # See: https://github.com/portainer/portainer/issues/12728#issuecomment-2982150257
+    # This also fixed it for me.
+    proxy_set_header Origin "";
+    
+    {% endif %}
+
+    set $upstream_address 127.0.0.1;
+    set $upstream_port {{ proxy_setup_internal_port }};
+    set $upstream_proto http;
+    proxy_pass $upstream_proto://$upstream_address:$upstream_port;
+  }
+}
