@@ -21,9 +21,3 @@
   become: true
   community.docker.docker_compose_v2:
     project_src: "/home/{{ ansible_user_id }}/karakeep/"
-- name: Include proxy-setup role
-  ansible.builtin.include_role:
-    name: proxy-setup
-  vars:
-    proxy_setup_internal_port: 3002
-    proxy_setup_internal_subdomain: karakeep

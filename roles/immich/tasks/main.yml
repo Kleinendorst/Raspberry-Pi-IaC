@@ -29,12 +29,11 @@
 # I however found out that the free tier has a maximum file size upload of 100 Mb which
 # can be too small for some videos that might be uploaded.
 # So in addition to the Cloudflare tunnel it is also exposed the service via
-# Locally on the network (with a 5 GiB upload size limit):
-# local.immich.kleinendorst.info
+# Locally on the network (with a 5 GiB upload size limit): local.immich.kleinendorst.info
 # This can actually be configured to be used on the WiFi network in the app.
 - name: Include proxy-setup role
   ansible.builtin.include_role:
     name: proxy-setup
   vars:
     proxy_setup_internal_port: 2283
-    proxy_setup_internal_subdomain: immich
+    proxy_setup_internal_subdomain: local.immich

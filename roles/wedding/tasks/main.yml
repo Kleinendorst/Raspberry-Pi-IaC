@@ -24,9 +24,3 @@
       WEDDING_FULL_ACCESS_CODE: "{{ wedding_env.full_access_code }}"
       WEDDING_NIGHT_ACCESS_CODE: "{{ wedding_env.night_access_code }}"
     restart_policy: always
-- name: Include proxy-setup role
-  ansible.builtin.include_role:
-    name: proxy-setup
-  vars:
-    proxy_setup_internal_port: 3001
-    proxy_setup_internal_subdomain: wedding
