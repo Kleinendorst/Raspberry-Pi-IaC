@@ -5,6 +5,11 @@
     state: directory
     owner: "{{ ansible_user_id }}"
     mode: '0744'
+# There appears to be a problem when starting up the Postgres container,
+# see: https://github.com/immich-app/immich/issues/19038. A workaround is discussed which involves
+# downgrading the postgres container. I downgraded it manually (which means rerunning the role will break it).
+# According to the issue mentioned above it should be fixed quite quickly though so next time it is worth a shot
+# to see if it's fixed.
 - name: Download the Immich Dockerfile
   ansible.builtin.get_url:
     url: https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
