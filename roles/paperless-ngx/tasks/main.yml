@@ -1,0 +1,35 @@
+---
+- name: Create the compose project directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/paperless"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0744'
+- name: Create the docker-compose.yml file
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: "/home/{{ ansible_user_id }}/paperless/"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create the .env file
+  ansible.builtin.copy:
+    src: .env
+    dest: "/home/{{ ansible_user_id }}/paperless/"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create the docker-compose.env file
+  ansible.builtin.template:
+    src: docker-compose.env.j2
+    dest: "/home/{{ ansible_user_id }}/paperless/docker-compose.env"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create and start services
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user_id }}/paperless/"
+- name: Include proxy-setup role
+  ansible.builtin.include_role:
+    name: proxy-setup
+  vars:
+    proxy_setup_internal_port: 8236
+    proxy_setup_internal_subdomain: paperless

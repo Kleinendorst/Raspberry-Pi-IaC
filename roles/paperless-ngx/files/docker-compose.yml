@@ -1,0 +1,46 @@
+# Sourced from: https://github.com/paperless-ngx/paperless-ngx/blob/main/docker/compose/docker-compose.postgres-tika.yml
+# with the following changes:
+# - Removed the introductory comment at the top
+# - Removed the Postgres container. We'll use the already running Postgres instance.
+
+services:
+  broker:
+    image: docker.io/library/redis:8
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+  webserver:
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - broker
+      - gotenberg
+      - tika
+    ports:
+      - "8236:8000"
+    volumes:
+      - /bulk/paperless_data:/usr/src/paperless/data
+      - /bulk/paperless_media:/usr/src/paperless/media
+      - /bulk/paperless_export:/usr/src/paperless/export
+      - /bulk/paperless_consume:/usr/src/paperless/consume
+    env_file: docker-compose.env
+    environment:
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: postgres.kleinendorst.info
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+  gotenberg:
+    image: docker.io/gotenberg/gotenberg:8.20
+    restart: unless-stopped
+    # The gotenberg chromium route is used to convert .eml files. We do not
+    # want to allow external content like tracking pixels or even javascript.
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+  tika:
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+volumes:
+  redisdata:

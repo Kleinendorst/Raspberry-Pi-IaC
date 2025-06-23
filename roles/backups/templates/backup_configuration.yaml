@@ -8,6 +8,10 @@ database_backups:
     dbname: memos
     username: memos
     password: "{{ memos_postgres_pass }}"
+  - host: postgres.kleinendorst.info
+    dbname: paperless
+    username: paperless
+    password: "{{ paperless_postgres_pass }}"
 docker_volume_backups:
   - volume_name: actual_data
     container_name: actual-server
@@ -22,3 +26,7 @@ docker_volume_backups:
     container_name: karakeep-meilisearch-1
   - volume_name: portainer_data
     container_name: portainer
+  - volume_name: /bulk/paperless_data
+    container_name: paperless-webserver-1
+  - volume_name: /bulk/paperless_media
+    container_name: paperless-webserver-1
