@@ -26,7 +26,7 @@ docker_volume_backups:
     container_name: karakeep-meilisearch-1
   - volume_name: portainer_data
     container_name: portainer
-  - volume_name: paperless_data
+  - volume_name: /bulk/paperless_data
     container_name: paperless-webserver-1
-  - volume_name: paperless_media
+  - volume_name: /bulk/paperless_media
     container_name: paperless-webserver-1
