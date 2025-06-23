@@ -27,6 +27,6 @@ docker_volume_backups:
   - volume_name: portainer_data
     container_name: portainer
   - volume_name: paperless_data
-    container_name: paperless_webserver
+    container_name: paperless-webserver-1
   - volume_name: paperless_media
-    container_name: paperless_webserver
+    container_name: paperless-webserver-1
