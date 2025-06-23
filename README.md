@@ -120,7 +120,7 @@ It should now be possible to view backups contained within the borg repo by runn
 mkdir /bulk/backup_work_dir
 cd /bulk/backup_work_dir/
 
-borg extract '::[ARCHIVE_NAME]' ./docker_volumes ./postgres
+borg extract '::[ARCHIVE_NAME]'
 ```
 
 The files are now unpacked in this directory, make sure to clean up this directory after use.
