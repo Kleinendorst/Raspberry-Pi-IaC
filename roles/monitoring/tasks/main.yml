@@ -92,6 +92,13 @@
         target: /var/lib/grafana
     env:
       GF_INSTALL_PLUGINS: "grafana-clock-panel 2.1.8"
+      GF_SMTP_ENABLED: 'true'
+      GF_SMTP_HOST: "{{ smtp_host }}"
+      GF_SMTP_USER: "{{ smtp_user_name }}"
+      GF_SMTP_PASSWORD: "{{ smtp_user_password }}"
+      GF_SMTP_FROM_ADDRESS: "{{ smtp_from_address }}"
+      GF_SMTP_FROM_NAME: 'Grafana'
+      GF_SMTP_SKIP_VERIFY: 'false'
     restart_policy: always
 - name: Include proxy-setup role
   ansible.builtin.include_role:
