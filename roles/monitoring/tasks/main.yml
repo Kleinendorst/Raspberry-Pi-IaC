@@ -59,15 +59,6 @@
 - name: Include the Prometheus - node exporter role
   ansible.builtin.include_role:
     name: prometheus.prometheus.node_exporter
-- name: Include the Prometheus - alertmanager role
-  ansible.builtin.include_role:
-    name: prometheus.prometheus.alertmanager
-- name: Include proxy-setup role - AlertManager
-  ansible.builtin.include_role:
-    name: proxy-setup
-  vars:
-    proxy_setup_internal_port: 9093
-    proxy_setup_internal_subdomain: alertmanager
 # region: Install Grafana
 # With the current approach we store the internal database in a docker volume which is included in the backup. All data included
 # consists of configuration of grafana: user information, dashboards, datasources, etc.

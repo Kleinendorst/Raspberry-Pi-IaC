@@ -50,19 +50,5 @@ node_exporter_enabled_collectors:
   - {"textfile": {"directory": "{{ node_exporter_textfile_dir }}"}}
   - processes
 node_exporter_web_listen_address: 192.168.50.27:9100
-# Alertmanager
-alertmanager_version: "{{ versions.monitoring.alertmanager }}"
-alertmanager_web_listen_address: 0.0.0.0:9093
-# Telegram configuration inspired by this source:
-# https://www.stranatesta.eu/tech/how-to-configure-prometheus-alertmanager-to-send-alerts-to-telegram/#configure-alertmanager
-alertmanager_receivers:
-  - name: telegram
-    telegram_configs:
-      - bot_token: "{{ telegram_bot_token }}"
-        api_url: 'https://api.telegram.org'
-        chat_id: "{{ telegram_chat_id }}"
-        parse_mode: ''
-alertmanager_route:
-  receiver: telegram
 # Grafana
 grafana_username: grafana
