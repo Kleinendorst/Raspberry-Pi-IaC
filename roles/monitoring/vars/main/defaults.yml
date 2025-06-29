@@ -17,6 +17,9 @@ prometheus_targets:
   cadvisor:
     - targets:
         - raspberry-pi-1.kleinendorst.info:8091
+  docker:
+    - targets:
+        - raspberry-pi-1.kleinendorst.info:9323
 prometheus_web_listen_address: 0.0.0.0:9090
 prometheus_scrape_configs:
   - job_name: "prometheus"
@@ -39,6 +42,10 @@ prometheus_scrape_configs:
     file_sd_configs:
       - files:
           - "{{ prometheus_config_dir }}/file_sd/cadvisor.yml"
+  - job_name: "docker"
+    file_sd_configs:
+      - files:
+          - "{{ prometheus_config_dir }}/file_sd/docker.yml"
 prometheus_alert_rules: []
 prometheus_alert_rules_files: []
 # Node exporter

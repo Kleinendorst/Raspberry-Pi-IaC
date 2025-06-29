@@ -41,6 +41,8 @@
     # geerlingguy.docker vars:
     docker_edition: 'ce'
     docker_install_compose_plugin: true
+    docker_daemon_options:
+      metrics-addr: '0.0.0.0:9323'
   tasks:
     # This task can be handy for debugging gathered facts, uncomment it if necessary:
     # - name: Store gathered facts in local file
