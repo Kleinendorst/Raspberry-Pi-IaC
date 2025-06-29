@@ -39,10 +39,8 @@ prometheus_scrape_configs:
     file_sd_configs:
       - files:
           - "{{ prometheus_config_dir }}/file_sd/cadvisor.yml"
-prometheus_alertmanager_config:
-  - static_configs:
-      - targets:
-          - raspberry-pi-1.kleinendorst.info:9093
+prometheus_alert_rules: []
+prometheus_alert_rules_files: []
 # Node exporter
 node_exporter_version: "{{ versions.monitoring.node_exporter }}"
 node_exporter_enabled_collectors:
