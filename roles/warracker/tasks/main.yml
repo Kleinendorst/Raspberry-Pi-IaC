@@ -1,0 +1,37 @@
+---
+# I've created a database as per my note here: https://memos.kleinendorst.info/memos/mTeLoKU98zcMrdXM3vB2d5
+# However, the migration script when initially starting gives this error:
+#
+#   ERROR:__main__:Error fixing permissions: permission denied to alter role
+#   DETAIL:  Only roles with the CREATEROLE attribute and the ADMIN option on role "warracker" may alter this role.
+#
+# To fix this, run the following commands from psql (connect using instructions in the note):
+#
+#   ALTER USER myuser WITH SUPERUSER;
+#
+# This is very unfortunate, we really don't want this PostgreSQL role to have superuser permissions. 
+# I might want to create an issue with the project for this.
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: warracker-server
+    image: "ghcr.io/sassanix/warracker/main:latest"
+    image_name_mismatch: recreate
+    env:
+      DB_HOST: postgres.kleinendorst.info
+      DB_NAME: "warracker"
+      DB_USER: "{{ warracker_postgres_user }}"
+      DB_PASSWORD: "{{ warracker_postgres_password }}"
+      # SMTP won't work for now, see this issue I created: https://github.com/sassanix/Warracker/issues/113
+      # SMTP_HOST: "{{ warracker_smtp_host }}"
+      # SMTP_PORT: "{{ warracker_smtp_port }}"
+      # SMTP_USERNAME: "{{ warracker_smtp_user_name }}"
+      # SMTP_PASSWORD: "{{ warracker_smtp_user_password }}"
+      SECRET_KEY: "{{ warracker_secret_key }}"
+      # URL settings (Important for OIDC redirects and email links)
+      # Ensure these point to the public-facing URL of your application
+      FRONTEND_URL: https://warracker.kleinendorst.info
+      APP_BASE_URL: https://warracker.kleinendorst.info
+    ports:
+      - "127.0.0.1:8005:80/tcp"
+    restart_policy: always
