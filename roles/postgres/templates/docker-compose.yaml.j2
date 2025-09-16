@@ -4,7 +4,7 @@ services:
     image: docker.io/postgres:{{ versions.postgres.self }}
     ports:
       - "0.0.0.0:5432:5432"
-    restart: always
+    restart: unless-stopped
     volumes:
       - "/home/{{ postgres_unix_username }}/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
       - "/home/{{ postgres_unix_username }}/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
@@ -22,6 +22,7 @@ services:
     image: quay.io/prometheuscommunity/postgres-exporter:{{ versions.postgres.prometheus_exporter }}
     ports:
       - "0.0.0.0:9187:9187"
+    restart: unless-stopped
     # See: https://github.com/prometheus-community/postgres_exporter/issues/1060#issuecomment-2420235829
     command: "--no-collector.stat_bgwriter"
     environment:
