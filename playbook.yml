@@ -32,7 +32,6 @@
     - role: karakeep
     - role: memos
     - role: paperless-ngx
-    - role: warracker
     - role: backups
   vars:
     # devsec.hardening.ssh_hardening vars:
