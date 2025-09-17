@@ -1,0 +1,13 @@
+---
+- name: Check if the cloudflared service is installed
+  ansible.builtin.command: systemctl status cloudflared.service
+  register: cloudflared_check
+  changed_when: false
+  failed_when: false
+  no_log: true
+- name: Uninstall the cloudflare service
+  become: true
+  ansible.builtin.command:
+    cmd: "bash -c 'cloudflared service uninstall'"
+  changed_when: true
+  when: cloudflared_check.rc == 0

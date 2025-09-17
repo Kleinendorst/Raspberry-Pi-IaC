@@ -15,4 +15,4 @@ versions:
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.17.1
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2025.7.0 # TODO: See roles/cloudflared/handlers/main.yml when updating the version...
+  cloudflared: 2025.8.1

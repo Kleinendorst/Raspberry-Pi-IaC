@@ -4,6 +4,8 @@
   notify: Reinstall cloudflared
   ansible.builtin.apt:
     deb: "https://github.com/cloudflare/cloudflared/releases/download/{{ versions.cloudflared }}/cloudflared-linux-arm64.deb"
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
 - name: Install the Cloudflared tunnel as a systemd service
   become: true
   ansible.builtin.command:

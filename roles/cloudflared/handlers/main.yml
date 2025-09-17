@@ -1,7 +1,7 @@
 ---
-# TODO: Not tested yet... see versions.yml
+# Still not tested yet. The problem is each time that the service is installed but not actived
+# after which I manually need to start it.
 - name: Reinstall cloudflared
-  become: true
-  ansible.builtin.command:
-    cmd: "bash -c 'cloudflared service uninstall && cloudflared service install {{ cloudflared_refresh_token }}'"
-    creates: /etc/systemd/system/cloudflared.service
+  # Tried to use a block but this wouldn't work:
+  # https://stackoverflow.com/questions/71578834/using-block-in-handler-ansible#answer-71583324
+  ansible.builtin.include_tasks: tasks/reinstall-service.yml
