@@ -25,8 +25,7 @@
     - role: wedding
     - role: monitoring
     - role: watchtower
-    # # TODO: Enable this role at some point in the future to see if a new version fixes the issue (see inside the role).
-    # # - role: immich
+    - role: immich
     - role: stirling-pdf
     - role: cyberchef
     - role: karakeep
