@@ -9,10 +9,6 @@ database_backups:
     username: memos
     password: "{{ memos_postgres_pass }}"
   - host: postgres.kleinendorst.info
-    dbname: warracker
-    username: warracker
-    password: "{{ warracker_postgres_pass }}"
-  - host: postgres.kleinendorst.info
     dbname: paperless
     username: paperless
     password: "{{ paperless_postgres_pass }}"
