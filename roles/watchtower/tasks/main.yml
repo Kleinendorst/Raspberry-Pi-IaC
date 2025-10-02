@@ -10,6 +10,7 @@
       # It throws a warning on each interval when scanned. This setting
       # specifically disabled checking these.
       WATCHTOWER_DISABLE_CONTAINERS: "immich_redis,immich_postgres"
+      WATCHTOWER_CLEANUP: "true"
     mounts:
       - source: /var/run/docker.sock
         target: /var/run/docker.sock
