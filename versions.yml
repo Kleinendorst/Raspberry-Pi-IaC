@@ -4,7 +4,7 @@ versions:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
     cAdvisor: v0.52.0
     # Versions: https://prometheus.io/download/
-    prometheus: 3.5.0
+    prometheus: 3.7.1
     # Changelog: https://github.com/prometheus/node_exporter/blob/master/CHANGELOG.md
     node_exporter: 1.9.0
     # Changelog: https://github.com/prometheus/alertmanager/blob/main/CHANGELOG.md
@@ -13,6 +13,6 @@ versions:
     # Docker version: https://hub.docker.com/_/postgres
     self: 17-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
-    prometheus_exporter: v0.17.1
+    prometheus_exporter: v0.18.1
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2025.8.1
+  cloudflared: 2025.10.0
