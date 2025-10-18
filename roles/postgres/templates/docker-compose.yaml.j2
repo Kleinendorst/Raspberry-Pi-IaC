@@ -8,7 +8,7 @@ services:
     volumes:
       - "/home/{{ postgres_unix_username }}/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
       - "/home/{{ postgres_unix_username }}/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
-      - "postgres_data:/var/lib/postgresql/data"
+      - "postgres_data:/var/lib/postgresql"
     command:
       - -c
       - ssl=on

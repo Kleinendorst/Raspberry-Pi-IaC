@@ -11,7 +11,7 @@ versions:
     alertmanager: 0.28.1
   postgres:
     # Docker version: https://hub.docker.com/_/postgres
-    self: 17-alpine
+    self: 18-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.18.1
   # Releases: https://github.com/cloudflare/cloudflared/releases
