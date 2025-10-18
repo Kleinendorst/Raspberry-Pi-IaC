@@ -30,6 +30,10 @@ services:
       PAPERLESS_TIKA_ENABLED: 1
       PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
       PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+      # The suggested template in the documentation:
+      # https://docs.paperless-ngx.com/advanced_usage/#file-name-handling
+      # seems just fine to me so I'm using that.
+      PAPERLESS_FILENAME_FORMAT: '{{ created_year }}/{{ correspondent }}/{{ title }}'
   gotenberg:
     image: docker.io/gotenberg/gotenberg:8.20
     restart: unless-stopped
