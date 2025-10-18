@@ -17,7 +17,8 @@
         type: bind
       # See: https://containrrr.dev/watchtower/private-registries/#share_the_docker_configuration_file
       # Used so that the private repositories of root can be pulled (with the credentials).
-      # This affects the wedding container registry (hosted on ghcr.io).
+      # This used to affect the wedding container registry (hosted on ghcr.io). This setup is still kept
+      # even though the afformentioned container is no longer deployed on the Raspberry Pi.
       - source: /root/.docker/config.json
         target: /config.json
         type: bind
