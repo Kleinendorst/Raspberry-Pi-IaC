@@ -22,7 +22,6 @@
     - role: portainer
     - role: actual
     - role: postgres
-    - role: wedding
     - role: monitoring
     - role: watchtower
     - role: immich
