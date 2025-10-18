@@ -1,10 +1,6 @@
 ---
 database_backups:
   - host: postgres.kleinendorst.info
-    dbname: wedding
-    username: wedding
-    password: "{{ wedding_postgres_pass }}"
-  - host: postgres.kleinendorst.info
     dbname: memos
     username: memos
     password: "{{ memos_postgres_pass }}"
