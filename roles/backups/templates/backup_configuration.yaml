@@ -9,7 +9,7 @@ database_backups:
     username: paperless
     password: "{{ paperless_postgres_pass }}"
 docker_volume_backups:
-  - volume_name: actual_data
+  - volume_name: /bulk/actual_data
     container_name: actual-server
   # I tried restoring this specific backup but that didn't work. I got a
   # Login failed: Internal Server Error on the dashboard
