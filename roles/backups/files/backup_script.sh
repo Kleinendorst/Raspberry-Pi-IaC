@@ -29,14 +29,14 @@ trap 'logInfo "Backup interrupted"; cleanup; exit 2' INT TERM
 trap 'logInfo "Backup completed, cleaning up..."; cleanup' EXIT
 
 # region: ------ DB_BACKUPS -----------------------------------------------------------------------
-createDatabaseBackup() {
+createPostgresDatabaseBackup() {
     host=$1
     dbname=$2
     username=$3
     password=$4
     targetFolderPath=$5
 
-    logInfo "Dumping database: $dbname to $targetFolderPath..."
+    logInfo "Dumping Postgres database: $dbname to $targetFolderPath..."
 
     # Getting the correct version tools installed on the host proofed to be a very frustrating experience.
     # So instead we'll do the dumping on the container.
@@ -56,40 +56,40 @@ createDatabaseBackup() {
     docker exec "$postgresContainerName" rm "$containerDumpPath"
 }
 
-createAllDatabaseBackups() {
-    nrOfConfigurations="$(yq '.database_backups | length' <"$configurationFileLocation")"
-    logInfo "Backing up from $nrOfConfigurations database configurations..."
+createAllPostgresDatabaseBackups() {
+    nrOfConfigurations="$(yq '.database_backups.postgres | length' <"$configurationFileLocation")"
+    logInfo "Backing up from $nrOfConfigurations postgres database configurations..."
 
     postgresBackupDirectory="$workDirPath/postgres"
     mkdir -p "$postgresBackupDirectory"
 
     for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
-        dbConfiguration="$(yq ".database_backups[$i]" <"$configurationFileLocation")"
+        dbConfiguration="$(yq ".database_backups.postgres[$i]" <"$configurationFileLocation")"
         host="$(echo "$dbConfiguration" | jq -r '.host')"
         dbname="$(echo "$dbConfiguration" | jq -r '.dbname')"
         username="$(echo "$dbConfiguration" | jq -r '.username')"
         password="$(echo "$dbConfiguration" | jq -r '.password')"
         targetFolderPath="$postgresBackupDirectory"
 
-        createDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
+        createPostgresDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
     done
 }
 # endregion: --- DB_BACKUPS -----------------------------------------------------------------------
 
 # region: ------ BORG_BACKUPS ---------------------------------------------------------------------
 createArchiveInRepository() {
-    logInfo "Creating new archive in Borg repository (at $BORG_REPO)..."
+    logInfo "Creating new Postgres archive in Borg repository (at $BORG_REPO)..."
 
     (
         cd "$workDirPath" || exit 1
 
         logInfo "Stopping all containers for which backups should be stored..."
-        targetDockerContainers="$(yq -r '.docker_volume_backups | map(.container_name) | unique | join(" ")' <"$configurationFileLocation")"
+        targetDockerContainers="$(yq -r '.docker_mount_backups | map(.container_name) | unique | join(" ")' <"$configurationFileLocation")"
         stopCommand="docker stop $targetDockerContainers"
         logInfo "Running: $stopCommand..."
         $stopCommand
 
-        targetDockerMounts="$(yq -r '.docker_volume_backups | map(.volume_name) | join(" ")' <"$configurationFileLocation")"
+        targetDockerMounts="$(yq -r '.docker_mount_backups | map(.mount_path) | join(" ")' <"$configurationFileLocation")"
         logInfo "Storing these mounts into backup: $targetDockerMounts..."
 
         # Note that both BORG_PASSPHRASE and BORG_REPO should be set, otherwise a password prompt will be present...
@@ -116,7 +116,7 @@ createArchiveInRepository() {
 # endregion: --- BORG_BACKUPS ---------------------------------------------------------------------
 
 # region: ------ PREPARE_BACKUP_FILES -------------------------------------------------------------
-createAllDatabaseBackups
+createAllPostgresDatabaseBackups
 echo
 createArchiveInRepository
 # endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------

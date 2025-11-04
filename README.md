@@ -172,12 +172,12 @@ Copy this script to the local folder (still assuming this is the folder which co
 #!/bin/bash
 # Copied and altered from backup_script.sh:
 configurationFileLocation='/etc/borg_backup_script/backup_configuration.yaml'
-nrOfConfigurations="$(yq '.docker_volume_backups | length' <"$configurationFileLocation")"
+nrOfConfigurations="$(yq '.docker_mount_backups | length' <"$configurationFileLocation")"
 
 for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
-    dockerConfiguration="$(yq ".docker_volume_backups[$i]" <"$configurationFileLocation")"
+    dockerConfiguration="$(yq ".docker_mount_backups[$i]" <"$configurationFileLocation")"
     containerName="$(echo "$dockerConfiguration" | jq -r '.container_name')"
-    volumeName="$(echo "$dockerConfiguration" | jq -r '.volume_name')"
+    volumeName="$(echo "$dockerConfiguration" | jq -r '.mount_path')"
 
     specificVolumeBackupPath="./docker_volumes/$volumeName"
 
