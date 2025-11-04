@@ -62,7 +62,6 @@
 # region: Install Grafana
 # With the current approach we store the internal database in a docker volume which is included in the backup. All data included
 # consists of configuration of grafana: user information, dashboards, datasources, etc.
-# Previously, restoring the backup failed with some log errors and the inability to log in after restore.
 # An alternative approach could be to configure more in code using environment variables for the container (see:
 # https://grafana.com/docs/grafana/latest/setup-grafana/installation/docker/#use-environment-variables-to-configure-grafana).
 # This has certain advantages and disadvantages.
