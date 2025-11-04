@@ -1,20 +1,29 @@
 #!/usr/bin/env bash
 # Inspiration of script from: https://borgbackup.readthedocs.io/en/stable/quickstart.html#automating-backups
-
-logInfo() { printf '%(%Y-%m-%d %H:%m:%S)T [INFO]: %s\n' -1 "$*" >&2; }
-
 configurationFileLocation=$1
 
-# Working on the bulk directory which is mounted on a very big SSD, this way we don't have to wory about
-# running out of disk space. Note however that borg specifically might make use of cache directories
-# in the home directory which aren't on this disk, let's tackle this problem when it actually starts failing...
-workDirPath=/bulk/backup_work_dir
+# region: ------ HELPER_FUNCTIONS ------------------------------------------------------------------
+logInfo() { printf '%(%Y-%m-%d %H:%m:%S)T [INFO]: %s\n' -1 "$*" >&2; }
+# endregion: --- HELPER_FUNCTIONS ------------------------------------------------------------------
+
+workDirPath=/mnt/tmpfs
 logInfo "Creating working directory at: $workDirPath..."
 mkdir -p "$workDirPath"
+logInfo "Mounting temporary (in ram) filesystem at: $workDirPath..."
+# See: https://unix.stackexchange.com/questions/188536/how-to-make-a-temporary-file-in-ram#188540
+mount -t tmpfs -o size=500m tmpfs /mnt/tmpfs
+
+logInfo "Changing work directory to: $workDirPath..."
+cd $workDirPath || exit 1
 
 cleanup() {
-    logInfo "Removing working directory at: $workDirPath..."
-    rm -rf "$workDirPath"
+    # Exiting from the temporary working directory is necessary
+    # otherwise umount results in a "umount: /mnt/tmpfs: target is busy."
+    # error. This is because this script's process is keeping the device busy.
+    logInfo "Exiting current working directory..."
+    cd ~ || exit 1
+    logInfo "Unmounting temporary filesystem..."
+    umount "$workDirPath"
 }
 trap 'logInfo "Backup interrupted"; cleanup; exit 2' INT TERM
 trap 'logInfo "Backup completed, cleaning up..."; cleanup' EXIT
