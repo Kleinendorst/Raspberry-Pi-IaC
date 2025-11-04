@@ -1,6 +1,4 @@
 #!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
 # Inspiration of script from: https://borgbackup.readthedocs.io/en/stable/quickstart.html#automating-backups
 
 logInfo() { printf '%(%Y-%m-%d %H:%m:%S)T [INFO]: %s\n' -1 "$*" >&2; }
@@ -69,58 +67,32 @@ createAllDatabaseBackups() {
 }
 # endregion: --- DB_BACKUPS -----------------------------------------------------------------------
 
-# region: ------ DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
-createDockerVolumeBackup() {
-    containerName=$1
-    volumeName=$2
-    specificVolumeBackupPath=$3
-
-    logInfo "Backup up Docker volume: $volumeName from running container: $containerName..."
-
-    logInfo "Stopping container: $containerName..."
-    docker stop "$containerName"
-
-    logInfo "Starting new container which copies over files..."
-    start=$SECONDS
-    docker run --rm -v "$volumeName:/volume" -v "$specificVolumeBackupPath:/target" --entrypoint "ash"\
-        alpine -c "cp -rf /volume/* /target/"
-
-    elapsedSeconds=$(( SECONDS - start ))
-    logInfo "Copying succeeded (in $elapsedSeconds seconds), restarting container..."
-    docker start "$containerName"
-}
-
-createAllDockerVolumeBackups() {
-    nrOfConfigurations="$(yq '.docker_volume_backups | length' <"$configurationFileLocation")"
-    logInfo "Backing up from $nrOfConfigurations docker configurations..."
-
-    dockerVolumeBackupPath="$workDirPath/docker_volumes"
-    mkdir -p "$dockerVolumeBackupPath"
-
-    for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
-        dockerConfiguration="$(yq ".docker_volume_backups[$i]" <"$configurationFileLocation")"
-        containerName="$(echo "$dockerConfiguration" | jq -r '.container_name')"
-        volumeName="$(echo "$dockerConfiguration" | jq -r '.volume_name')"
-
-        specificVolumeBackupPath="$dockerVolumeBackupPath/$volumeName"
-        mkdir -p "$specificVolumeBackupPath"
-
-        createDockerVolumeBackup "$containerName" "$volumeName" "$specificVolumeBackupPath"
-    done
-}
-# endregion: --- DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
-
 # region: ------ BORG_BACKUPS ---------------------------------------------------------------------
 createArchiveInRepository() {
     logInfo "Creating new archive in Borg repository (at $BORG_REPO)..."
 
     (
-        cd "$workDirPath"
+        cd "$workDirPath" || exit 1
+
+        logInfo "Stopping all containers for which backups should be stored..."
+        targetDockerContainers="$(yq -r '.docker_volume_backups | map(.container_name) | unique | join(" ")' <"$configurationFileLocation")"
+        stopCommand="docker stop $targetDockerContainers"
+        logInfo "Running: $stopCommand..."
+        $stopCommand
+
+        targetDockerMounts="$(yq -r '.docker_volume_backups | map(.volume_name) | join(" ")' <"$configurationFileLocation")"
+        logInfo "Storing these mounts into backup: $targetDockerMounts..."
 
         # Note that both BORG_PASSPHRASE and BORG_REPO should be set, otherwise a password prompt will be present...
+        logInfo "Running borg backup command for database backups and docker mounts: $targetDockerMounts..."
         borg create --stats --verbose --show-rc --compression zstd,11 \
             "::{fqdn}-{now:%Y-%m-%d}" \
-            ./docker_volumes ./postgres
+            $targetDockerMounts ./postgres
+
+        logInfo "Starting all containers for which backups should be stored..."
+        startCommand="docker start $targetDockerContainers"
+        logInfo "Running: $startCommand..."
+        $startCommand
 
         logInfo "Pruning old backups..."
         # Copied from: https://borgbackup.readthedocs.io/en/stable/quickstart.html as it seems
@@ -136,8 +108,6 @@ createArchiveInRepository() {
 
 # region: ------ PREPARE_BACKUP_FILES -------------------------------------------------------------
 createAllDatabaseBackups
-echo
-createAllDockerVolumeBackups
 echo
 createArchiveInRepository
 # endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------
