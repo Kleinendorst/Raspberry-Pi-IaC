@@ -1,8 +1,9 @@
 ---
-- name: Create portainer volume
-  become: true
-  community.docker.docker_volume:
-    volume_name: portainer_data
+- name: Ensure directory exists
+  ansible.builtin.file:
+    path: /bulk/portainer_data
+    state: directory
+    mode: '0755'
 - name: Install the container
   become: true
   community.docker.docker_container:
@@ -18,8 +19,9 @@
       VIRTUAL_HOST: portainer.kleinendorst.info
       VIRTUAL_PORT: '9000'
     mounts:
-      - source: portainer_data
+      - source: /bulk/portainer_data
         target: /data
+        type: bind
       - source: /var/run/docker.sock
         target: /var/run/docker.sock
         type: bind

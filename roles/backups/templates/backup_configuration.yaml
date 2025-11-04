@@ -1,28 +1,26 @@
 ---
 database_backups:
-  - host: postgres.kleinendorst.info
-    dbname: memos
-    username: memos
-    password: "{{ memos_postgres_pass }}"
-  - host: postgres.kleinendorst.info
-    dbname: paperless
-    username: paperless
-    password: "{{ paperless_postgres_pass }}"
-docker_volume_backups:
-  - volume_name: actual_data
+  postgres:
+    - host: postgres.kleinendorst.info
+      dbname: memos
+      username: memos
+      password: "{{ memos_postgres_pass }}"
+    - host: postgres.kleinendorst.info
+      dbname: paperless
+      username: paperless
+      password: "{{ paperless_postgres_pass }}"
+docker_mount_backups:
+  - mount_path: /bulk/actual_data
     container_name: actual-server
-  # I tried restoring this specific backup but that didn't work. I got a
-  # Login failed: Internal Server Error on the dashboard
-  # The logs mentioned that a non writeable database was being used...
-  - volume_name: grafana_data
+  - mount_path: /bulk/grafana_data
     container_name: grafana-server
-  - volume_name: karakeep_karakeep_data
+  - mount_path: /bulk/karakeep_data
     container_name: karakeep-web-1
-  - volume_name: karakeep_meilisearch
+  - mount_path: /bulk/karakeep_meilisearch
     container_name: karakeep-meilisearch-1
-  - volume_name: portainer_data
+  - mount_path: /bulk/portainer_data
     container_name: portainer
-  - volume_name: /bulk/paperless_data
+  - mount_path: /bulk/paperless_data
     container_name: paperless-webserver-1
-  - volume_name: /bulk/paperless_media
+  - mount_path: /bulk/paperless_media
     container_name: paperless-webserver-1

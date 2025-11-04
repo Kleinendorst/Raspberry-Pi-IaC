@@ -1,4 +1,14 @@
 ---
+- name: Ensure the Karakeep data directory exists
+  ansible.builtin.file:
+    path: /bulk/karakeep_data
+    state: directory
+    mode: '0755'
+- name: Ensure the Meilisearch data directory exists
+  ansible.builtin.file:
+    path: /bulk/karakeep_meilisearch
+    state: directory
+    mode: '0755'
 - name: Create the compose project directory
   ansible.builtin.file:
     path: "/home/{{ ansible_user_id }}/karakeep"

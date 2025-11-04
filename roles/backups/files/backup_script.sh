@@ -1,126 +1,99 @@
 #!/usr/bin/env bash
-set -euo pipefail
-IFS=$'\n\t'
 # Inspiration of script from: https://borgbackup.readthedocs.io/en/stable/quickstart.html#automating-backups
-
-logInfo() { printf '%(%Y-%m-%d %H:%m:%S)T [INFO]: %s\n' -1 "$*" >&2; }
-
 configurationFileLocation=$1
 
-# Working on the bulk directory which is mounted on a very big SSD, this way we don't have to wory about
-# running out of disk space. Note however that borg specifically might make use of cache directories
-# in the home directory which aren't on this disk, let's tackle this problem when it actually starts failing...
-workDirPath=/bulk/backup_work_dir
+# region: ------ HELPER_FUNCTIONS ------------------------------------------------------------------
+logInfo() { printf '%(%Y-%m-%d %H:%m:%S)T [INFO]: %s\n' -1 "$*" >&2; }
+# endregion: --- HELPER_FUNCTIONS ------------------------------------------------------------------
+
+workDirPath=/mnt/tmpfs
 logInfo "Creating working directory at: $workDirPath..."
 mkdir -p "$workDirPath"
+logInfo "Mounting temporary (in ram) filesystem at: $workDirPath..."
+# See: https://unix.stackexchange.com/questions/188536/how-to-make-a-temporary-file-in-ram#188540
+mount -t tmpfs -o size=500m tmpfs /mnt/tmpfs
+
+logInfo "Changing work directory to: $workDirPath..."
+cd $workDirPath || exit 1
 
 cleanup() {
-    logInfo "Removing working directory at: $workDirPath..."
-    rm -rf "$workDirPath"
+    # Exiting from the temporary working directory is necessary
+    # otherwise umount results in a "umount: /mnt/tmpfs: target is busy."
+    # error. This is because this script's process is keeping the device busy.
+    logInfo "Exiting current working directory..."
+    cd ~ || exit 1
+    logInfo "Unmounting temporary filesystem..."
+    umount "$workDirPath"
 }
 trap 'logInfo "Backup interrupted"; cleanup; exit 2' INT TERM
 trap 'logInfo "Backup completed, cleaning up..."; cleanup' EXIT
 
 # region: ------ DB_BACKUPS -----------------------------------------------------------------------
-createDatabaseBackup() {
+createPostgresDatabaseBackup() {
     host=$1
     dbname=$2
     username=$3
     password=$4
     targetFolderPath=$5
 
-    logInfo "Dumping database: $dbname to $targetFolderPath..."
+    logInfo "Dumping Postgres database: $dbname to $targetFolderPath..."
 
     # Getting the correct version tools installed on the host proofed to be a very frustrating experience.
     # So instead we'll do the dumping on the container.
     postgresContainerName='postgres-postgres-1'
-    containerDumpPath=/dump.sql
 
     logInfo "Dumping database $dbname on container: $postgresContainerName..."
     docker exec "$postgresContainerName" bash -c "(export PGPASSWORD='$password'; pg_dump $dbname \
-        --file $containerDumpPath \
         --host $host \
-        --username $username)"
-
-    logInfo "Extracting the archive from the container..."
-    docker cp "$postgresContainerName:$containerDumpPath" "$targetFolderPath/$dbname.sql" 2>/dev/null
-
-    logInfo "Removing the file from the docker container..."
-    docker exec "$postgresContainerName" rm "$containerDumpPath"
+        --username $username)" > "$targetFolderPath/$dbname.sql"
 }
 
-createAllDatabaseBackups() {
-    nrOfConfigurations="$(yq '.database_backups | length' <"$configurationFileLocation")"
-    logInfo "Backing up from $nrOfConfigurations database configurations..."
+createAllPostgresDatabaseBackups() {
+    nrOfConfigurations="$(yq '.database_backups.postgres | length' <"$configurationFileLocation")"
+    logInfo "Backing up from $nrOfConfigurations postgres database configurations..."
 
     postgresBackupDirectory="$workDirPath/postgres"
     mkdir -p "$postgresBackupDirectory"
 
     for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
-        dbConfiguration="$(yq ".database_backups[$i]" <"$configurationFileLocation")"
+        dbConfiguration="$(yq ".database_backups.postgres[$i]" <"$configurationFileLocation")"
         host="$(echo "$dbConfiguration" | jq -r '.host')"
         dbname="$(echo "$dbConfiguration" | jq -r '.dbname')"
         username="$(echo "$dbConfiguration" | jq -r '.username')"
         password="$(echo "$dbConfiguration" | jq -r '.password')"
         targetFolderPath="$postgresBackupDirectory"
 
-        createDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
+        createPostgresDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
     done
 }
 # endregion: --- DB_BACKUPS -----------------------------------------------------------------------
 
-# region: ------ DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
-createDockerVolumeBackup() {
-    containerName=$1
-    volumeName=$2
-    specificVolumeBackupPath=$3
-
-    logInfo "Backup up Docker volume: $volumeName from running container: $containerName..."
-
-    logInfo "Stopping container: $containerName..."
-    docker stop "$containerName"
-
-    logInfo "Starting new container which copies over files..."
-    start=$SECONDS
-    docker run --rm -v "$volumeName:/volume" -v "$specificVolumeBackupPath:/target" --entrypoint "ash"\
-        alpine -c "cp -rf /volume/* /target/"
-
-    elapsedSeconds=$(( SECONDS - start ))
-    logInfo "Copying succeeded (in $elapsedSeconds seconds), restarting container..."
-    docker start "$containerName"
-}
-
-createAllDockerVolumeBackups() {
-    nrOfConfigurations="$(yq '.docker_volume_backups | length' <"$configurationFileLocation")"
-    logInfo "Backing up from $nrOfConfigurations docker configurations..."
-
-    dockerVolumeBackupPath="$workDirPath/docker_volumes"
-    mkdir -p "$dockerVolumeBackupPath"
-
-    for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
-        dockerConfiguration="$(yq ".docker_volume_backups[$i]" <"$configurationFileLocation")"
-        containerName="$(echo "$dockerConfiguration" | jq -r '.container_name')"
-        volumeName="$(echo "$dockerConfiguration" | jq -r '.volume_name')"
-
-        specificVolumeBackupPath="$dockerVolumeBackupPath/$volumeName"
-        mkdir -p "$specificVolumeBackupPath"
-
-        createDockerVolumeBackup "$containerName" "$volumeName" "$specificVolumeBackupPath"
-    done
-}
-# endregion: --- DOCKER_VOLUME_BACKUPS ------------------------------------------------------------
-
 # region: ------ BORG_BACKUPS ---------------------------------------------------------------------
 createArchiveInRepository() {
-    logInfo "Creating new archive in Borg repository (at $BORG_REPO)..."
+    logInfo "Creating new Postgres archive in Borg repository (at $BORG_REPO)..."
 
     (
-        cd "$workDirPath"
+        cd "$workDirPath" || exit 1
+
+        logInfo "Stopping all containers for which backups should be stored..."
+        targetDockerContainers="$(yq -r '.docker_mount_backups | map(.container_name) | unique | join(" ")' <"$configurationFileLocation")"
+        stopCommand="docker stop $targetDockerContainers"
+        logInfo "Running: $stopCommand..."
+        $stopCommand
+
+        targetDockerMounts="$(yq -r '.docker_mount_backups | map(.mount_path) | join(" ")' <"$configurationFileLocation")"
+        logInfo "Storing these mounts into backup: $targetDockerMounts..."
 
         # Note that both BORG_PASSPHRASE and BORG_REPO should be set, otherwise a password prompt will be present...
+        logInfo "Running borg backup command for database backups and docker mounts: $targetDockerMounts..."
         borg create --stats --verbose --show-rc --compression zstd,11 \
             "::{fqdn}-{now:%Y-%m-%d}" \
-            ./docker_volumes ./postgres
+            $targetDockerMounts ./postgres
+
+        logInfo "Starting all containers for which backups should be stored..."
+        startCommand="docker start $targetDockerContainers"
+        logInfo "Running: $startCommand..."
+        $startCommand
 
         logInfo "Pruning old backups..."
         # Copied from: https://borgbackup.readthedocs.io/en/stable/quickstart.html as it seems
@@ -135,9 +108,7 @@ createArchiveInRepository() {
 # endregion: --- BORG_BACKUPS ---------------------------------------------------------------------
 
 # region: ------ PREPARE_BACKUP_FILES -------------------------------------------------------------
-createAllDatabaseBackups
-echo
-createAllDockerVolumeBackups
+createAllPostgresDatabaseBackups
 echo
 createArchiveInRepository
 # endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------

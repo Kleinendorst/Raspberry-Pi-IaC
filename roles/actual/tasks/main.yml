@@ -1,8 +1,9 @@
 ---
-- name: Create a volume
-  become: true
-  community.docker.docker_volume:
-    name: actual_data
+- name: Ensure directory exists
+  ansible.builtin.file:
+    path: /bulk/actual_data
+    state: directory
+    mode: '0755'
 - name: Install the container
   become: true
   community.docker.docker_container:
@@ -12,8 +13,9 @@
     ports:
       - "127.0.0.1:5006:5006/tcp"
     mounts:
-      - source: actual_data
+      - source: /bulk/actual_data
         target: /data
+        type: bind
     restart_policy: always
 - name: Include proxy-setup role
   ansible.builtin.include_role:

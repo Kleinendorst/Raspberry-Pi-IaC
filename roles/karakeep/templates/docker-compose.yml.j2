@@ -3,7 +3,7 @@ services:
     image: ghcr.io/karakeep-app/karakeep:release
     restart: unless-stopped
     volumes:
-      - karakeep_data:/data
+      - /bulk/karakeep_data:/data
     ports:
       - 127.0.0.1:3002:3000
     env_file:
@@ -32,8 +32,4 @@ services:
     environment:
       MEILI_NO_ANALYTICS: "true"
     volumes:
-      - meilisearch:/meili_data
-
-volumes:
-  meilisearch:
-  karakeep_data:
+      - /bulk/karakeep_meilisearch:/meili_data
