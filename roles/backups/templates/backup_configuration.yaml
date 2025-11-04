@@ -11,10 +11,7 @@ database_backups:
 docker_volume_backups:
   - volume_name: /bulk/actual_data
     container_name: actual-server
-  # I tried restoring this specific backup but that didn't work. I got a
-  # Login failed: Internal Server Error on the dashboard
-  # The logs mentioned that a non writeable database was being used...
-  - volume_name: grafana_data
+  - volume_name: /bulk/grafana_data
     container_name: grafana-server
   - volume_name: karakeep_karakeep_data
     container_name: karakeep-web-1
