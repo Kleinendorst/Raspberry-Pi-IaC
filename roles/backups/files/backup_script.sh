@@ -41,19 +41,11 @@ createPostgresDatabaseBackup() {
     # Getting the correct version tools installed on the host proofed to be a very frustrating experience.
     # So instead we'll do the dumping on the container.
     postgresContainerName='postgres-postgres-1'
-    containerDumpPath=/dump.sql
 
     logInfo "Dumping database $dbname on container: $postgresContainerName..."
     docker exec "$postgresContainerName" bash -c "(export PGPASSWORD='$password'; pg_dump $dbname \
-        --file $containerDumpPath \
         --host $host \
-        --username $username)"
-
-    logInfo "Extracting the archive from the container..."
-    docker cp "$postgresContainerName:$containerDumpPath" "$targetFolderPath/$dbname.sql" 2>/dev/null
-
-    logInfo "Removing the file from the docker container..."
-    docker exec "$postgresContainerName" rm "$containerDumpPath"
+        --username $username)" > "$targetFolderPath/$dbname.sql"
 }
 
 createAllPostgresDatabaseBackups() {
