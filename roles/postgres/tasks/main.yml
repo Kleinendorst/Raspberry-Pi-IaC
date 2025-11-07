@@ -1,8 +1,8 @@
 ---
-- name: Install ensure_certificate_setup.sh
+- name: Install ensure_postgres_certificate_setup.sh
   become: true
   ansible.builtin.copy:
-    src: ensure_certificate_setup.sh
+    src: ensure_postgres_certificate_setup.sh
     dest: "/root/.bin/"
     mode: '0700'
     owner: root
@@ -28,7 +28,7 @@
         --dns-cloudflare
         --dns-cloudflare-propagation-seconds 120
         --dns-cloudflare-credentials '/root/.secrets/certbot/cloudflare.ini'
-        --deploy-hook '/root/.bin/ensure_certificate_setup.sh'
+        --deploy-hook '/root/.bin/ensure_postgres_certificate_setup.sh'
         --agree-tos -m {{ administration_email }}
         -d postgres.kleinendorst.info
     creates: "/etc/letsencrypt/live/postgres.kleinendorst.info"
