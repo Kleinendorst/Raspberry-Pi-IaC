@@ -1,11 +1,4 @@
 ---
-- name: Include user role
-  ansible.builtin.include_role:
-    name: user
-  vars:
-    user_username: "{{ postgres_unix_username }}"
-    user_password: "{{ postgres_unix_password }}"
-    user_add_to_docker_group: true
 - name: Install ensure_certificate_setup.sh
   become: true
   ansible.builtin.copy:
@@ -13,6 +6,19 @@
     dest: "/root/.bin/"
     mode: '0700'
     owner: root
+- name: Create the compose project directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/postgres"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0744'
+- name: Create the compose project
+  become: true
+  ansible.builtin.template:
+    src: docker-compose.yaml.j2
+    dest: "/home/{{ ansible_user_id }}/postgres/docker-compose.yaml"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
 # Output of the hook can be found as part of the logs at: /var/log/letsencrypt/letsencrypt.log
 - name: Create certificates for PostgreSQL (postgres.kleinendorst.info)
   become: true
@@ -26,28 +32,10 @@
         --agree-tos -m {{ administration_email }}
         -d postgres.kleinendorst.info
     creates: "/etc/letsencrypt/live/postgres.kleinendorst.info"
-# TODO: Instead of creating a seperate postgres user specifically for storing
-#       the files we might also upload the compose to the default account and run from there.
-- name: Create the compose project directory
-  become: true
-  become_user: "{{ postgres_unix_username }}"
-  ansible.builtin.file:
-    path: "/home/{{ postgres_unix_username }}/postgres"
-    state: directory
-    owner: "{{ postgres_unix_username }}"
-    mode: '0744'
-- name: Create the compose project
-  become: true
-  become_user: "{{ postgres_unix_username }}"
-  ansible.builtin.template:
-    src: docker-compose.yaml.j2
-    dest: "/home/{{ postgres_unix_username }}/postgres/docker-compose.yaml"
-    owner: "{{ postgres_unix_username }}"
-    mode: '0644'
 - name: Create and start services
   become: true
   community.docker.docker_compose_v2:
-    project_src: "/home/{{ postgres_unix_username }}/postgres/"
+    project_src: "/home/{{ ansible_user_id }}/postgres/"
 - name: Add entry in /etc/hosts
   become: true
   notify: Restart dnsmasq

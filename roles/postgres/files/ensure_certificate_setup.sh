@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Running as $(whoami)..."
-certsPath="/home/postgres/certs"
+certsPath="/home/thomas/postgres/certs"
 target_host_postgres_id=70
 
 if [[ ! -e "$certsPath" ]]; then
