@@ -13,7 +13,7 @@ services:
       - "mysql_data:/var/lib/mysql"
     command:
       - "--default-storage-engine=innodb"
-      - "--require-secure-transport=ON"
+      - "--require-secure-transport=OFF"
       - "--ssl-ca=/etc/mysql/certs/ca.pem"
       - "--ssl-cert=/etc/mysql/certs/cert.pem"
       - "--ssl-key=/etc/mysql/certs/privkey.pem"

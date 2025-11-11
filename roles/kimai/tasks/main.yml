@@ -1,0 +1,36 @@
+---
+- name: Ensure the data directory exists
+  ansible.builtin.file:
+    path: /bulk/kimai_data
+    state: directory
+    mode: '0755'
+- name: Ensure the plugins directory exists
+  ansible.builtin.file:
+    path: /bulk/kimai_plugins
+    state: directory
+    mode: '0755'
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: kimai-server
+    image: "kimai/kimai2:apache"
+    image_name_mismatch: recreate
+    env:
+      ADMINMAIL: "{{ kimai_admin_mail }}"
+      ADMINPASS: "{{ kimai_admin_password }}"
+      # I would've liked to add: &ssl-mode=REQUIRED but this isn't picked up at all. Instead it only seems to work
+      # with a non encrypted connection...
+      DATABASE_URL: "mysql://{{ kimai_mysql_user }}:{{ kimai_mysql_password }}@mysql.kleinendorst.info/{{ kimai_mysql_db }}?charset=utf8mb4&serverVersion={{ versions.mysql.self }}"
+      APP_SECRET: "{{ kimai_app_secret }}"
+    volumes:
+      - /bulk/kimai_data:/opt/kimai/var/data
+      - /bulk/kimai_plugins:/opt/kimai/var/plugins
+    ports:
+      - "127.0.0.1:8001:8001/tcp"
+    restart_policy: unless-stopped
+- name: Include proxy-setup role
+  ansible.builtin.include_role:
+    name: proxy-setup
+  vars:
+    proxy_setup_internal_port: 8001
+    proxy_setup_internal_subdomain: kimai
