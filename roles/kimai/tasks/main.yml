@@ -18,6 +18,8 @@
     env:
       ADMINMAIL: "{{ kimai_admin_mail }}"
       ADMINPASS: "{{ kimai_admin_password }}"
+      MAILER_FROM: "{{ kimai_mail_from }}"
+      MAILER_URL: "smtp://{{ kimai_mail_smtp_username }}:{{ kimai_mail_smtp_password }}@smtp.purelymail.com:587?encryption=tls"
       # I would've liked to add: &ssl-mode=REQUIRED but this isn't picked up at all. Instead it only seems to work
       # with a non encrypted connection...
       DATABASE_URL: "mysql://{{ kimai_mysql_user }}:{{ kimai_mysql_password }}@mysql.kleinendorst.info/{{ kimai_mysql_db }}?charset=utf8mb4&serverVersion={{ versions.mysql.self }}"
