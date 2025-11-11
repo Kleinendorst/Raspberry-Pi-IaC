@@ -1,0 +1,23 @@
+---
+services:
+   mysql:
+    image: mysql:{{ versions.mysql.self }}
+    ports:
+      - "0.0.0.0:3306:3306"
+    # restart: unless-stopped
+    user: 999:999
+    volumes:
+      - "/home/thomas/mysql/certs/ca.pem:/etc/mysql/certs/ca.pem:ro"
+      - "/home/thomas/mysql/certs/cert.pem:/etc/mysql/certs/cert.pem:ro"
+      - "/home/thomas/mysql/certs/privkey.pem:/etc/mysql/certs/privkey.pem:ro"
+      - "mysql_data:/var/lib/mysql"
+    command:
+      - "--default-storage-engine=innodb"
+      - "--require-secure-transport=ON"
+      - "--ssl-ca=/etc/mysql/certs/ca.pem"
+      - "--ssl-cert=/etc/mysql/certs/cert.pem"
+      - "--ssl-key=/etc/mysql/certs/privkey.pem"
+    environment:
+      MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+volumes:
+  mysql_data:
