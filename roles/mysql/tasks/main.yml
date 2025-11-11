@@ -1,9 +1,4 @@
 ---
-# Seems some manual processing of the certificate is necessary:
-# https://nucco.org/2023/12/configure-mysql-to-use-lets-encrypt-certificates.html
-# Here's another link:
-# https://krisrice.io/2022-01-28-mysql-lets-encrypt#deploy-tls-certificate-to-mysql-server
-# Seems the problem is with a missing root certificate??
 - name: Install ensure_mysql_certificate_setup.sh
   become: true
   ansible.builtin.copy:
