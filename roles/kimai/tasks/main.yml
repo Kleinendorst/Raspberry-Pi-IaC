@@ -23,6 +23,7 @@
       # I would've liked to add: &ssl-mode=REQUIRED but this isn't picked up at all. Instead it only seems to work
       # with a non encrypted connection...
       DATABASE_URL: "mysql://{{ kimai_mysql_user }}:{{ kimai_mysql_password }}@mysql.kleinendorst.info/{{ kimai_mysql_db }}?charset=utf8mb4&serverVersion={{ versions.mysql.self }}"
+      TRUSTED_PROXIES: '0.0.0.0/0'
       APP_SECRET: "{{ kimai_app_secret }}"
     volumes:
       - /bulk/kimai_data:/opt/kimai/var/data
