@@ -38,12 +38,10 @@ createPostgresDatabaseBackup() {
 
     logInfo "Dumping Postgres database: $dbname to $targetFolderPath..."
 
-    # Getting the correct version tools installed on the host proofed to be a very frustrating experience.
-    # So instead we'll do the dumping on the container.
-    postgresContainerName='postgres-postgres-1'
+    containerName='postgres-postgres-1'
 
-    logInfo "Dumping database $dbname on container: $postgresContainerName..."
-    docker exec "$postgresContainerName" bash -c "(export PGPASSWORD='$password'; pg_dump $dbname \
+    logInfo "Dumping database $dbname from container: $containerName..."
+    docker exec "$containerName" bash -c "(export PGPASSWORD='$password'; pg_dump $dbname \
         --host $host \
         --username $username)" > "$targetFolderPath/$dbname.sql"
 }
@@ -64,6 +62,42 @@ createAllPostgresDatabaseBackups() {
         targetFolderPath="$postgresBackupDirectory"
 
         createPostgresDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
+    done
+}
+
+createMySQLDatabaseBackup() {
+    host=$1
+    dbname=$2
+    username=$3
+    password=$4
+    targetFolderPath=$5
+
+    logInfo "Dumping MySQL database: $dbname to $targetFolderPath..."
+
+    containerName='mysql-mysql-1'
+
+    logInfo "Dumping database $dbname on container: $containerName..."
+    docker exec "$containerName" mysqldump --single-transaction --no-tablespaces \
+        --user "$username" --password="$password" \
+        --host "$host" "$dbname" > "$targetFolderPath/$dbname.sql"
+}
+
+createAllMySQLDatabaseBackups() {
+    nrOfConfigurations="$(yq '.database_backups.mysql | length' <"$configurationFileLocation")"
+    logInfo "Backing up from $nrOfConfigurations mysql database configurations..."
+
+    mysqlBackupDirectory="$workDirPath/mysql"
+    mkdir -p "$mysqlBackupDirectory"
+
+    for ((i = 0 ; i < "$nrOfConfigurations" ; i++)); do
+        dbConfiguration="$(yq ".database_backups.mysql[$i]" <"$configurationFileLocation")"
+        host="$(echo "$dbConfiguration" | jq -r '.host')"
+        dbname="$(echo "$dbConfiguration" | jq -r '.dbname')"
+        username="$(echo "$dbConfiguration" | jq -r '.username')"
+        password="$(echo "$dbConfiguration" | jq -r '.password')"
+        targetFolderPath="$mysqlBackupDirectory"
+
+        createMySQLDatabaseBackup "$host" "$dbname" "$username" "$password" "$targetFolderPath"
     done
 }
 # endregion: --- DB_BACKUPS -----------------------------------------------------------------------
@@ -88,7 +122,7 @@ createArchiveInRepository() {
         logInfo "Running borg backup command for database backups and docker mounts: $targetDockerMounts..."
         borg create --stats --verbose --show-rc --compression zstd,11 \
             "::{fqdn}-{now:%Y-%m-%d}" \
-            $targetDockerMounts ./postgres
+            $targetDockerMounts ./postgres ./mysql
 
         logInfo "Starting all containers for which backups should be stored..."
         startCommand="docker start $targetDockerContainers"
@@ -109,6 +143,8 @@ createArchiveInRepository() {
 
 # region: ------ PREPARE_BACKUP_FILES -------------------------------------------------------------
 createAllPostgresDatabaseBackups
+echo
+createAllMySQLDatabaseBackups
 echo
 createArchiveInRepository
 # endregion: --- PREPARE_BACKUP_FILES -------------------------------------------------------------

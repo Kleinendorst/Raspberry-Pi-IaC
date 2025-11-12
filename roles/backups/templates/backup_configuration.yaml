@@ -9,6 +9,11 @@ database_backups:
       dbname: paperless
       username: paperless
       password: "{{ paperless_postgres_pass }}"
+  mysql:
+    - host: mysql.kleinendorst.info
+      dbname: kimai
+      username: kimai
+      password: "{{ kimai_mysql_pass }}"
 docker_mount_backups:
   - mount_path: /bulk/actual_data
     container_name: actual-server
@@ -24,3 +29,13 @@ docker_mount_backups:
     container_name: paperless-webserver-1
   - mount_path: /bulk/paperless_media
     container_name: paperless-webserver-1
+  # There are backup instructions here: https://www.kimai.org/documentation/backups.html
+  # Looking up the directories showed that this documentation is probably outdated though
+  # (missing folders and the .env file doesn't contain anything interesting). Instead I backup
+  # the volumes as are mounted in the compose example: https://www.kimai.org/documentation/docker-compose.html.
+  # I also tested these files by removing the container and recreating: even invoices were working that way
+  # so it should be fine.
+  - mount_path: /bulk/kimai_data
+    container_name: kimai-server
+  - mount_path: /bulk/kimai_plugins
+    container_name: kimai-server
