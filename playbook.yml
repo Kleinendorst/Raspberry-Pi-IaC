@@ -22,6 +22,7 @@
     - role: portainer
     - role: actual
     - role: postgres
+    - role: mysql
     - role: monitoring
     - role: watchtower
     - role: immich
@@ -30,6 +31,7 @@
     - role: karakeep
     - role: memos
     - role: paperless-ngx
+    - role: kimai
     - role: backups
   vars:
     # devsec.hardening.ssh_hardening vars:

@@ -6,8 +6,8 @@ services:
       - "0.0.0.0:5432:5432"
     restart: unless-stopped
     volumes:
-      - "/home/{{ postgres_unix_username }}/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
-      - "/home/{{ postgres_unix_username }}/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
+      - "/home/{{ ansible_user_id }}/postgres/certs/fullchain.pem:/var/lib/postgresql/fullchain.pem:ro"
+      - "/home/{{ ansible_user_id }}/postgres/certs/privkey.pem:/var/lib/postgresql/privkey.pem:ro"
       - "postgres_data:/var/lib/postgresql"
     command:
       - -c

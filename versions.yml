@@ -14,5 +14,7 @@ versions:
     self: 18-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
     prometheus_exporter: v0.18.1
+  mysql:
+    self: 8.4
   # Releases: https://github.com/cloudflare/cloudflared/releases
   cloudflared: 2025.11.0

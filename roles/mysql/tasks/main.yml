@@ -1,14 +1,14 @@
 ---
-- name: Install ensure_postgres_certificate_setup.sh
+- name: Install ensure_mysql_certificate_setup.sh
   become: true
   ansible.builtin.copy:
-    src: ensure_postgres_certificate_setup.sh
+    src: ensure_mysql_certificate_setup.sh
     dest: "/root/.bin/"
     mode: '0700'
     owner: root
 - name: Create the compose project directory
   ansible.builtin.file:
-    path: "/home/{{ ansible_user_id }}/postgres"
+    path: "/home/{{ ansible_user_id }}/mysql"
     state: directory
     owner: "{{ ansible_user_id }}"
     mode: '0744'
@@ -16,11 +16,11 @@
   become: true
   ansible.builtin.template:
     src: docker-compose.yaml.j2
-    dest: "/home/{{ ansible_user_id }}/postgres/docker-compose.yaml"
+    dest: "/home/{{ ansible_user_id }}/mysql/docker-compose.yaml"
     owner: "{{ ansible_user_id }}"
     mode: '0644'
 # Output of the hook can be found as part of the logs at: /var/log/letsencrypt/letsencrypt.log
-- name: Create certificates for PostgreSQL (postgres.kleinendorst.info)
+- name: Create certificates for MySQL (mysql.kleinendorst.info)
   become: true
   ansible.builtin.command:
     cmd: >-
@@ -28,17 +28,17 @@
         --dns-cloudflare
         --dns-cloudflare-propagation-seconds 120
         --dns-cloudflare-credentials '/root/.secrets/certbot/cloudflare.ini'
-        --deploy-hook '/root/.bin/ensure_postgres_certificate_setup.sh'
         --agree-tos -m {{ administration_email }}
-        -d postgres.kleinendorst.info
-    creates: "/etc/letsencrypt/live/postgres.kleinendorst.info"
+        --deploy-hook '/root/.bin/ensure_mysql_certificate_setup.sh'
+        -d mysql.kleinendorst.info
+    creates: "/etc/letsencrypt/live/mysql.kleinendorst.info"
 - name: Create and start services
   become: true
   community.docker.docker_compose_v2:
-    project_src: "/home/{{ ansible_user_id }}/postgres/"
+    project_src: "/home/{{ ansible_user_id }}/mysql/"
 - name: Add entry in /etc/hosts
   become: true
   notify: Restart dnsmasq
   ansible.builtin.lineinfile:
     path: /etc/hosts
-    line: "{{ ansible_facts['default_ipv4']['address'] }} postgres.kleinendorst.info"
+    line: "{{ ansible_facts['default_ipv4']['address'] }} mysql.kleinendorst.info"
