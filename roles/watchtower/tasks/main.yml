@@ -11,6 +11,9 @@
       # specifically disabled checking these.
       WATCHTOWER_DISABLE_CONTAINERS: "immich_redis,immich_postgres"
       WATCHTOWER_CLEANUP: "true"
+      # See: https://github.com/containrrr/watchtower/issues/2126#issuecomment-3533783717
+      # Will probably break in the future, at that point I would have to remove this.
+      DOCKER_API_VERSION: '1.52'
     mounts:
       - source: /var/run/docker.sock
         target: /var/run/docker.sock
