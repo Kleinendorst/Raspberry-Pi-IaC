@@ -17,4 +17,4 @@ versions:
   mysql:
     self: 8.4
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2025.11.0
+  cloudflared: 2025.11.1
