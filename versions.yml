@@ -4,7 +4,7 @@ versions:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
     cAdvisor: v0.52.0
     # Releases: https://prometheus.io/download/#prometheus
-    prometheus: 3.7.3
+    prometheus: 3.8.0
     # Releases: https://prometheus.io/download/#node_exporter
     node_exporter: 1.10.2
     # Releases: https://prometheus.io/download/#alertmanager
