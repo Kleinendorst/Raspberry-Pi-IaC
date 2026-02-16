@@ -8,13 +8,14 @@ versions:
     # Releases: https://prometheus.io/download/#node_exporter
     node_exporter: 1.10.2
     # Releases: https://prometheus.io/download/#alertmanager
-    alertmanager: 0.31.0
+    alertmanager: 0.31.1
   postgres:
     # Docker version: https://hub.docker.com/_/postgres
     self: 18-alpine
     # Releases: https://github.com/prometheus-community/postgres_exporter/releases
-    prometheus_exporter: v0.18.1
+    prometheus_exporter: v0.19.0
+  # TReleases: https://hub.docker.com/_/mysql
   mysql:
     self: 8.4
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2026.1.2
+  cloudflared: 2026.2.0
