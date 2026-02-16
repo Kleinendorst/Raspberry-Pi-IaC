@@ -27,16 +27,16 @@ The files within this repository should be run on a computer with Ansible instal
     ```bash
     ansible-galaxy install -r requirements.yml
     ```
-3. Enter the vault password in the **.vault_pass** file. This is included in **.gitignore** so it shouldn't end up in the repository:
+3. Install the Python3 passlib library (used internally in the user role);
+
+    ```bash
+    sudo apt install python3-passlib
+    ```
+4. Enter the vault password in the **.vault_pass** file. This is included in **.gitignore** so it shouldn't end up in the repository:
 
     ```bash
     # Notice the space at the beginning, this prevents the shell from saving this command in its history.
      echo '[ -- enter vault pass here -- ]' > .vault_pass
-    ```
-4. Install the Python3 passlib library (used internally in the user role);
-
-    ```bash
-    sudo apt install python3-passlib
     ```
 
 ### Environment prerequisites
