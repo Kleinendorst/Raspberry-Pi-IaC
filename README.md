@@ -39,6 +39,8 @@ The files within this repository should be run on a computer with Ansible instal
      echo '[ -- enter vault pass here -- ]' > .vault_pass
     ```
 
+> **TODO**: I'm getting an error for `ansible-lint` in vscode, it couldn't be found. I might have to write additional steps here.
+
 ### Environment prerequisites
 The Raspberry Pi IaC code contained within this repository provisions the Raspberry Pi itself but doesn't provision all surrounding infrastructure which is presumed to be managed by hand. The following relevant configuration is assumed:
 
