@@ -1,19 +1,21 @@
 ---
-- name: Add an apt key by id from a keyserver
+- name: Download Nginx GPG key
   become: true
-  ansible.builtin.apt_key:
+  ansible.builtin.get_url:
     url: https://nginx.org/keys/nginx_signing.key
-    state: present
-- name: Add Nginx repository into sources list
+    dest: /usr/share/keyrings/nginx-archive-keyring.asc
+    mode: '0644'
+- name: Dearmor Nginx GPG key
+  become: true
+  ansible.builtin.command:
+    cmd: gpg --dearmor -o /usr/share/keyrings/nginx-archive-keyring.gpg /usr/share/keyrings/nginx-archive-keyring.asc
+    creates: /usr/share/keyrings/nginx-archive-keyring.gpg
+- name: Add Nginx repository with architecture and signing key
   become: true
   ansible.builtin.apt_repository:
-    repo: deb https://nginx.org/packages/debian/ {{ ansible_facts['lsb']['codename'] }} nginx
+    repo: "deb [arch=arm64 signed-by=/usr/share/keyrings/nginx-archive-keyring.gpg] https://nginx.org/packages/debian {{ ansible_facts['distribution_release'] }} nginx"
     state: present
-- name: Add Nginx source repository into sources list
-  become: true
-  ansible.builtin.apt_repository:
-    repo: deb-src https://nginx.org/packages/debian/ {{ ansible_facts['lsb']['codename'] }} nginx
-    state: present
+    filename: nginx
 - name: Install Nginx
   become: true
   ansible.builtin.apt:
