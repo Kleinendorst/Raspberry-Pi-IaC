@@ -1,0 +1,28 @@
+---
+- name: Ensure the Vaultwarden data directory exists
+  ansible.builtin.file:
+    path: /bulk/vaultwarden_data
+    state: directory
+    mode: '0755'
+- name: Create the compose project directory
+  ansible.builtin.file:
+    path: "/home/{{ ansible_user_id }}/vaultwarden"
+    state: directory
+    owner: "{{ ansible_user_id }}"
+    mode: '0744'
+- name: Create the docker-compose.yml file
+  ansible.builtin.copy:
+    src: docker-compose.yml
+    dest: "/home/{{ ansible_user_id }}/vaultwarden/"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create the .env file
+  ansible.builtin.template:
+    src: .env.j2
+    dest: "/home/{{ ansible_user_id }}/vaultwarden/.env"
+    owner: "{{ ansible_user_id }}"
+    mode: '0644'
+- name: Create and start services
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: "/home/{{ ansible_user_id }}/vaultwarden/"
