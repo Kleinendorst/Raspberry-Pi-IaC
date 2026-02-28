@@ -23,6 +23,8 @@ docker_mount_backups:
     container_name: karakeep-web-1
   - mount_path: /bulk/karakeep_meilisearch
     container_name: karakeep-meilisearch-1
+  - mount_path: /bulk/vaultwarden_data
+    container_name: vaultwarden
   - mount_path: /bulk/portainer_data
     container_name: portainer
   - mount_path: /bulk/paperless_data
