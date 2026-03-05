@@ -30,7 +30,6 @@
     - role: cyberchef
     - role: karakeep
     - role: vaultwarden
-    - role: memos
     - role: paperless-ngx
     - role: kimai
     - role: backups
