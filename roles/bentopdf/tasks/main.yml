@@ -3,17 +3,14 @@
   become: true
   community.docker.docker_container:
     name: stirling-pdf
-    image: "docker.stirlingpdf.com/stirlingtools/stirling-pdf:latest"
+    image: "ghcr.io/alam00000/bentopdf:latest"
     image_name_mismatch: recreate
-    env:
-      DISABLE_ADDITIONAL_FEATURES: 'false'
-      LANGS: 'en_GB'
     ports:
-      - "127.0.0.1:8087:8080/tcp"
+      - "127.0.0.1:8033:8080/tcp"
     restart_policy: always
 - name: Include proxy-setup role
   ansible.builtin.include_role:
     name: proxy-setup
   vars:
-    proxy_setup_internal_port: 8087
-    proxy_setup_internal_subdomain: stirling-pdf
+    proxy_setup_internal_port: 8033
+    proxy_setup_internal_subdomain: bentopdf
