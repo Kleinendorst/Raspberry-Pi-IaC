@@ -1,0 +1,25 @@
+---
+- name: Ensure directory exists
+  ansible.builtin.file:
+    path: /bulk/uptime_kuma
+    state: directory
+    mode: '0755'
+- name: Install the container
+  become: true
+  community.docker.docker_container:
+    name: uptime-kuma
+    image: "docker.io/louislam/uptime-kuma:2"
+    image_name_mismatch: recreate
+    ports:
+      - "127.0.0.1:3001:3001/tcp"
+    mounts:
+      - source: /bulk/uptime_kuma
+        target: /app/data
+        type: bind
+    restart_policy: always
+- name: Include proxy-setup role
+  ansible.builtin.include_role:
+    name: proxy-setup
+  vars:
+    proxy_setup_internal_port: 3001
+    proxy_setup_internal_subdomain: uptime-kuma

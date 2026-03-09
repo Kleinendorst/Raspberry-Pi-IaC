@@ -32,6 +32,7 @@
     - role: vaultwarden
     - role: paperless-ngx
     - role: kimai
+    - role: uptime-kuma
     - role: backups
   vars:
     # devsec.hardening.ssh_hardening vars:
