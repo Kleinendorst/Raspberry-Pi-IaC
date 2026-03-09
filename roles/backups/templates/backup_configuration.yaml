@@ -37,3 +37,5 @@ docker_mount_backups:
     container_name: kimai-server
   - mount_path: /bulk/kimai_plugins
     container_name: kimai-server
+  - mount_path: /bulk/uptime_kuma
+    container_name: uptime-kuma
