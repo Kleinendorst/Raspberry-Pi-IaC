@@ -8,7 +8,7 @@
   become: true
   community.docker.docker_container:
     name: uptime-kuma
-    image: "docker.io/louislam/uptime-kuma:2"
+    image: "docker.io/louislam/uptime-kuma:2-slim-rootless"
     image_name_mismatch: recreate
     ports:
       - "127.0.0.1:3001:3001/tcp"
