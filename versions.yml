@@ -4,9 +4,9 @@ versions:
     # Releases: https://console.cloud.google.com/artifacts/docker/cadvisor/us/gcr.io/cadvisor?pli=1&invt=AbrOvw&inv=1
     cAdvisor: v0.55.1
     # Releases: https://prometheus.io/download/#prometheus
-    prometheus: 3.10.0
+    prometheus: 3.11.0
     # Releases: https://prometheus.io/download/#node_exporter
-    node_exporter: 1.10.2
+    node_exporter: 1.11.0
     # Releases: https://prometheus.io/download/#alertmanager
     alertmanager: 0.31.1
   postgres:
@@ -18,4 +18,4 @@ versions:
   mysql:
     self: 8.4
   # Releases: https://github.com/cloudflare/cloudflared/releases
-  cloudflared: 2026.2.0
+  cloudflared: 2026.3.0
