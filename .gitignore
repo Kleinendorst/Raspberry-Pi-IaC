@@ -1,5 +1,6 @@
 cloudflare ddns/ddns_config.ini
 .vscode/launch.json
+.ansible
 .vault_pass
 .ansible_facts.json
 __pycache__
